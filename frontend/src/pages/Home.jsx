@@ -1,62 +1,176 @@
-import React, { useContext } from 'react'
+import { motion } from 'framer-motion'
+import { useI18n } from '../contexts/I18nContext'
 import { Link } from 'react-router-dom'
-import { I18nContext } from '../contexts/I18nContext.jsx'
 
-export default function Home(){
-  const { t } = useContext(I18nContext)
+export default function Home() {
+  const { t } = useI18n()
+
   const features = [
-    {title: 'Predicción Inteligente', desc: 'Modelos que anticipan riesgos y apoyan decisiones.'},
-    {title: 'Visualización de Datos', desc: 'Dashboards claros para supervisión y análisis.'},
-    {title: 'Privacidad', desc: 'Datos anonimizados y uso responsable.'},
-    {title: 'Beneficios', desc: 'Intervenciones tempranas para mejorar el rendimiento.'},
+    {
+      icon: '🤖',
+      title: t('feature_ai') || 'Inteligencia Artificial',
+      desc: t('feature_ai_desc') || 'Algoritmo avanzado de predicción de rendimiento académico'
+    },
+    {
+      icon: '📊',
+      title: t('feature_viz') || 'Visualización de Datos',
+      desc: t('feature_viz_desc') || 'Gráficos intuitivos y reportes detallados'
+    },
+    {
+      icon: '🔒',
+      title: t('feature_privacy') || 'Privacidad Garantizada',
+      desc: t('feature_privacy_desc') || 'Tus datos están seguros y protegidos'
+    },
+    {
+      icon: '💬',
+      title: t('feature_support') || 'Soporte 24/7',
+      desc: t('feature_support_desc') || 'Asistencia continua para estudiantes'
+    }
   ]
 
   return (
-    <section className="space-y-12">
-      <div className="grid md:grid-cols-2 gap-8 items-center rounded-xl p-6 md:p-10 hero-bg">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight headline-animate">{t('home_title')}</h1>
-          <p className="mt-4 text-gray-600 dark:text-gray-300 max-w-xl subtitle-fade">{t('home_subtitle')}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/dashboard" className="btn-primary shadow">{t('cta_dashboard')}</Link>
-            <Link to="/prediction" className="px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700">{t('cta_learn_more')}</Link>
-          </div>
-        </div>
-        <div className="order-first md:order-last flex justify-center md:justify-end">
-          <div className="hero-card hidden md:block w-80">
-            <div className="text-sm font-semibold mb-2">{t('hero_card_title')}</div>
-            <div className="text-xs text-[var(--muted)] mb-4">{t('hero_card_subtitle')}</div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="p-3 bg-white/90 rounded-lg shadow-sm">{t('hero_item_1')}</div>
-              <div className="p-3 bg-white/90 rounded-lg shadow-sm">{t('hero_item_2')}</div>
-              <div className="p-3 bg-white/90 rounded-lg shadow-sm">{t('hero_item_3')}</div>
-              <div className="p-3 bg-white/90 rounded-lg shadow-sm">{t('hero_item_4')}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-20 md:py-32">
+        <div className="container-custom relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto text-center space-y-8"
+          >
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-5xl md:text-7xl font-bold leading-tight"
+            >
+              {t('home_title') || 'Predice tu Rendimiento Académico'}
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto"
+            >
+              {t('home_subtitle') || 'Sistema inteligente de predicción de rendimiento académico para la Universidad ULEAM'}
+            </motion.p>
 
-      <div>
-        <h2 className="text-2xl font-bold mb-4 headline-animate">{t('offers_title') || t('offers_title') }</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className={`p-6 bg-white dark:bg-gray-800 rounded-xl shadow card-animate stagger-1`}>
-            <div className="font-semibold mb-2">{t('feature_1_title')}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">{t('feature_1_desc')}</div>
-          </div>
-          <div className={`p-6 bg-white dark:bg-gray-800 rounded-xl shadow card-animate stagger-2`}>
-            <div className="font-semibold mb-2">{t('feature_2_title')}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">{t('feature_2_desc')}</div>
-          </div>
-          <div className={`p-6 bg-white dark:bg-gray-800 rounded-xl shadow card-animate stagger-3`}>
-            <div className="font-semibold mb-2">{t('feature_3_title')}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">{t('feature_3_desc')}</div>
-          </div>
-          <div className={`p-6 bg-white dark:bg-gray-800 rounded-xl shadow card-animate stagger-4`}>
-            <div className="font-semibold mb-2">{t('feature_4_title')}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">{t('feature_4_desc')}</div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+              <Link 
+                to="/dashboard" 
+                className="btn bg-white text-primary-700 hover:bg-neutral-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                🎯 {t('home_cta_predict') || 'Hacer Predicción'}
+              </Link>
+              <Link 
+                to="/about" 
+                className="btn border-2 border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-xl transition-all"
+              >
+                📖 {t('home_cta_learn') || 'Conocer Más'}
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Decoración de fondo */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+      </section>
+
+      {/* Características */}
+      <section className="py-20 bg-neutral-50 dark:bg-neutral-900">
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
+              {t('home_features_title') || 'Características Principales'}
+            </h2>
+            <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
+              {t('home_features_subtitle') || 'Descubre por qué EduPredict es la mejor herramienta para estudiantes'}
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="card card-hover p-8 text-center bg-white dark:bg-neutral-800"
+              >
+                <div className="text-6xl mb-4">{feat.icon}</div>
+                <h3 className="text-xl font-bold mb-3">{feat.title}</h3>
+                <p className="text-neutral-600 dark:text-neutral-400">{feat.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Estadísticas */}
+      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
+        <div className="container-custom">
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+            {[
+              { value: '95%', label: t('stats_accuracy') || 'Precisión del Modelo' },
+              { value: '1,000+', label: t('stats_students') || 'Estudiantes Beneficiados' },
+              { value: '24/7', label: t('stats_support') || 'Soporte Disponible' }
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+              >
+                <div className="text-5xl md:text-6xl font-bold mb-2">{stat.value}</div>
+                <div className="text-lg opacity-90">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Final */}
+      <section className="py-20 bg-white dark:bg-neutral-800">
+        <div className="container-custom text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="max-w-3xl mx-auto space-y-6"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold gradient-text">
+              {t('home_cta_title') || '¿Listo para comenzar?'}
+            </h2>
+            <p className="text-lg text-neutral-600 dark:text-neutral-400">
+              {t('home_cta_desc') || 'Únete a cientos de estudiantes que ya están mejorando su rendimiento académico'}
+            </p>
+            <Link 
+              to="/usuarios" 
+              className="inline-block btn btn-primary px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl"
+            >
+              🚀 {t('home_cta_signup') || 'Crear Cuenta Gratis'}
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+    </div>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { I18nContext } from '../contexts/I18nContext.jsx'
 import { ThemeContext } from '../contexts/ThemeContext.jsx'
@@ -8,6 +8,10 @@ export default function Navbar(){
   const { dark, setDark, highContrast, setHighContrast, friendlyFont, setFriendlyFont, readingComfort, setReadingComfort, textSize, setTextSize } = useContext(ThemeContext)
   const [openAcc, setOpenAcc] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
+
+  useEffect(() => {
+    console.log('[Navbar] Montado correctamente')
+  }, [])
 
   const openPanel = () => {
     setIsClosing(false)
@@ -24,28 +28,49 @@ export default function Navbar(){
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100 dark:bg-gray-900/70 dark:border-gray-800">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100 dark:bg-gray-900/80 dark:border-gray-800">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3 gap-4">
           <Link to="/" className="flex items-center gap-3 logo-link" title="EduPredict - ULEAM" aria-label="Ir al inicio">
             <div className="logo-animate" id="navbar-logo-wrap">
-              <img src="/uleam-logo.png" srcSet="/uleam-logo.png 1x" alt="ULEAM" className="w-16 h-16 object-contain logo-img" role="img" />
+              <img 
+                src="/uleam-logo.png" 
+                srcSet="/uleam-logo.png 1x" 
+                alt="ULEAM" 
+                className="w-16 h-16 object-contain logo-img" 
+                role="img"
+                onError={(e) => {
+                  console.warn('[Navbar] Logo no encontrado')
+                  e.target.style.opacity = '0.3'
+                }}
+              />
             </div>
             <span className="font-extrabold text-lg tracking-tight">EduPredict</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="hover:text-brand">{t('home')}</Link>
-            <Link to="/prediction" className="hover:text-brand">{t('prediction')}</Link>
-            <Link to="/dashboard" className="hover:text-brand">{t('dashboard')}</Link>
-            <Link to="/history" className="hover:text-brand">{t('history')}</Link>
-            <Link to="/about" className="hover:text-brand">{t('about')}</Link>
-            <Link to="/contact" className="hover:text-brand">{t('contact')}</Link>
+            <Link to="/" className="hover:text-brand transition-colors">{t('home')}</Link>
+            <Link to="/prediction" className="hover:text-brand transition-colors">{t('prediction')}</Link>
+            <Link to="/dashboard" className="hover:text-brand transition-colors">{t('dashboard')}</Link>
+            <Link to="/history" className="hover:text-brand transition-colors">{t('history')}</Link>
+            <Link to="/about" className="hover:text-brand transition-colors">{t('about')}</Link>
+            <Link to="/contact" className="hover:text-brand transition-colors">{t('contact')}</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <select value={lang} onChange={e=> setLang(e.target.value)} className="bg-white/90 dark:bg-gray-800/80 border rounded px-2 py-1 text-sm">
+            <select 
+              value={lang} 
+              onChange={e=> setLang(e.target.value)} 
+              className="bg-white/90 dark:bg-gray-800/80 border rounded px-2 py-1 text-sm"
+              aria-label="Seleccionar idioma"
+            >
               <option value="es">ES</option>
               <option value="en">EN</option>
             </select>
-            <button onClick={()=> setDark(!dark)} className="px-3 py-1 rounded-full bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] text-white shadow-sm" aria-label="toggle theme">{dark ? '☀' : '🌙'}</button>
+            <button 
+              onClick={()=> setDark(!dark)} 
+              className="px-3 py-1 rounded-full bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] text-white shadow-sm hover:shadow-md transition-shadow" 
+              aria-label={dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            >
+              {dark ? '☀' : '🌙'}
+            </button>
           </div>
         </div>
       </header>

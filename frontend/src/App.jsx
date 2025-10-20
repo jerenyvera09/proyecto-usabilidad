@@ -1,5 +1,5 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Home from './pages/Home.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -9,6 +9,12 @@ import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
 
 export default function App(){
+  const location = useLocation()
+  
+  useEffect(() => {
+    console.log('[App] Navegando a:', location.pathname)
+  }, [location])
+  
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <Navbar />
@@ -20,6 +26,7 @@ export default function App(){
           <Route path="/history" element={<History />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<Home />} />
         </Routes>
       </main>
     </div>

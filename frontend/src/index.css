@@ -1,0 +1,216 @@
+/* Estilos globales - EduPredict */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-neutral-200 dark:border-neutral-700;
+  }
+  
+  body {
+    @apply bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50;
+    @apply font-sans antialiased;
+    @apply transition-colors duration-300;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+  
+  /* Scrollbar personalizado */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-neutral-100 dark:bg-neutral-800;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neutral-400 dark:bg-neutral-500;
+  }
+}
+
+@layer components {
+  /* Botones */
+  .btn {
+    @apply px-6 py-3 rounded-full font-semibold transition-all duration-300;
+    @apply focus:outline-none focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-700;
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-500 text-white;
+    @apply hover:from-primary-700 hover:to-primary-600;
+    @apply shadow-lg hover:shadow-xl hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply bg-neutral-200 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-100;
+    @apply hover:bg-neutral-300 dark:hover:bg-neutral-600;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary-500 text-primary-600 dark:text-primary-400;
+    @apply hover:bg-primary-50 dark:hover:bg-primary-900/20;
+  }
+  
+  /* Inputs */
+  .input {
+    @apply w-full px-4 py-3 rounded-lg border-2;
+    @apply bg-white dark:bg-neutral-800;
+    @apply border-neutral-300 dark:border-neutral-600;
+    @apply focus:border-primary-500 dark:focus:border-primary-400;
+    @apply focus:ring-4 focus:ring-primary-100 dark:focus:ring-primary-900/30;
+    @apply transition-all duration-200;
+    @apply text-base;
+  }
+  
+  .input-error {
+    @apply border-red-500 dark:border-red-400;
+    @apply focus:border-red-500 dark:focus:border-red-400;
+    @apply focus:ring-red-100 dark:focus:ring-red-900/30;
+  }
+  
+  .label {
+    @apply block text-sm font-semibold mb-2;
+    @apply text-neutral-700 dark:text-neutral-300;
+  }
+  
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-neutral-800 rounded-2xl shadow-lg;
+    @apply border border-neutral-200 dark:border-neutral-700;
+    @apply transition-all duration-300;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-2xl hover:-translate-y-1;
+  }
+  
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Foco visible para accesibilidad */
+  .focus-visible {
+    @apply focus:outline-none focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-700;
+    @apply focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-neutral-900;
+  }
+}
+
+@layer utilities {
+  /* Animaciones personalizadas */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Gradientes */
+  .gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-500;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
+  }
+  
+  /* Modo alto contraste */
+  .high-contrast {
+    @apply contrast-125 saturate-150;
+  }
+  
+  /* Espaciado mejorado para lectura */
+  .reading-comfort p,
+  .reading-comfort li {
+    @apply leading-relaxed tracking-wide;
+    letter-spacing: 0.025em;
+    line-height: 1.8;
+  }
+  
+  /* Tamaño de texto ampliado */
+  .text-large {
+    font-size: 1.125em !important;
+  }
+  
+  .text-large h1 { font-size: 1.25em !important; }
+  .text-large h2 { font-size: 1.2em !important; }
+  .text-large h3 { font-size: 1.15em !important; }
+  .text-large p, 
+  .text-large li, 
+  .text-large span { font-size: 1.125em !important; }
+  
+  /* Desactivar animaciones */
+  .no-animations * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Modo reducido de movimiento (accesibilidad) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Splash Screen */
+.splash-screen {
+  @apply fixed inset-0 z-50 flex items-center justify-center;
+  @apply bg-gradient-to-br from-primary-50 to-primary-100;
+  @apply dark:from-neutral-900 dark:to-neutral-800;
+}
+
+.splash-logo {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Tooltips accesibles */
+[data-tooltip] {
+  @apply relative;
+}
+
+[data-tooltip]::after {
+  @apply content-[attr(data-tooltip)] absolute bottom-full left-1/2 -translate-x-1/2 mb-2;
+  @apply px-3 py-1 rounded-lg text-xs font-medium;
+  @apply bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900;
+  @apply opacity-0 pointer-events-none transition-opacity duration-200;
+  white-space: nowrap;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus::after {
+  @apply opacity-100;
+}

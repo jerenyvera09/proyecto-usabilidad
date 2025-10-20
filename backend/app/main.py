@@ -1,76 +1,290 @@
-import os, numpy as np
-from fastapi import FastAPI, Depends, HTTPException
+"""
+EduPredict - Sistema de Predicción de Rendimiento Académico
+Backend API REST con FastAPI
+ULEAM 6A 2025-2
+"""
+
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import select, Session
-from pydantic import BaseModel
-from dotenv import load_dotenv
+from sqlmodel import Session, select
+from typing import List
+import os
+from datetime import datetime, timedelta
+import jwt
+from passlib.context import CryptContext
 
-from .database import init_db, get_session
-from .models import Student, User
-from .schemas import LoginRequest, TokenResponse
-from .auth import create_token, get_current_user
+from .database import create_db_and_tables, get_session
+from .models import (
+    Usuario, UsuarioCreate, UsuarioLogin, UsuarioResponse,
+    Prediccion, PrediccionCreate, PrediccionResponse
+)
 
-load_dotenv()
+# Configuración
+SECRET_KEY = os.getenv("SECRET_KEY", "edupredict-uleam-2025-secret-key-change-in-production")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
 
-app = FastAPI(title="EduPredict API", version="1.0.0")
-# default allowed origin: vite default port 5175 used by the frontend in this starter
-origins = os.getenv("ALLOW_ORIGINS", "http://localhost:5175").split(",")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+app = FastAPI(
+    title="EduPredict API",
+    description="Sistema de Predicción de Rendimiento Académico - ULEAM",
+    version="1.0.0"
+)
+
+# CORS
+origins = os.getenv("ALLOW_ORIGINS", "http://localhost:5173,http://localhost:5174,http://localhost:5175").split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in origins],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Inicializar BD al arrancar
 @app.on_event("startup")
 def on_startup():
-    init_db()
+    create_db_and_tables()
+    print("✅ Base de datos inicializada correctamente")
 
-@app.get("/api/health")
-def health():
-    return {"status": "ok"}
+# ============================================
+# UTILIDADES
+# ============================================
 
-@app.post("/api/auth/login", response_model=TokenResponse)
-def login(payload: LoginRequest, session: Session = Depends(get_session)):
-    # Simple demo: accept any password, require @uleam.edu.ec email
-    if not payload.email or "@uleam" not in payload.email:
-        raise HTTPException(status_code=401, detail="Solo cuentas ULEAM")
-    # upsert user
-    user = session.exec(select(User).where(User.email == payload.email)).first()
-    if not user:
-        user = User(email=payload.email, full_name=payload.email.split("@")[0].title())
-        session.add(user); session.commit()
-    token = create_token(user.email)
-    return TokenResponse(access_token=token)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verificar contraseña"""
+    return pwd_context.verify(plain_password, hashed_password)
 
-class PredictRequest(BaseModel):
-    name: str
-    gpa: float
-    attendance: float
-    study_hours: float
+def get_password_hash(password: str) -> str:
+    """Hash de contraseña"""
+    return pwd_context.hash(password)
 
-class PredictResponse(BaseModel):
-    risk_prob: float
-    risk_label: int
-    message: str
+def create_access_token(data: dict):
+    """Crear JWT token"""
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
-@app.post("/api/predict", response_model=PredictResponse)
-def predict(req: PredictRequest, user=Depends(get_current_user), session: Session = Depends(get_session)):
-    # simple heuristic: lower GPA & attendance -> higher risk
-    x = np.array([req.gpa, req.attendance, req.study_hours], dtype=float)
-    w = np.array([-2.0, -1.2, -0.4])
-    b = 5.0
-    z = float(w @ x + b)
-    prob = 1.0 / (1.0 + np.exp(-z/10))
-    label = int(prob > 0.5)
-    # store sample
-    st = Student(name=req.name, gpa=req.gpa, attendance=req.attendance, study_hours=req.study_hours, label=label)
-    session.add(st); session.commit()
-    msg = "Riesgo alto" if label else "Riesgo bajo"
-    return PredictResponse(risk_prob=round(prob,3), risk_label=label, message=msg)
+def calcular_riesgo(nota_promedio: float, asistencia: int, horas_estudio: int) -> dict:
+    """
+    Algoritmo de predicción de riesgo académico
+    Retorna: {"riesgo": "bajo|medio|alto", "score": 0-100, "recomendacion": "..."}
+    """
+    # Score ponderado (0-100)
+    score_nota = (nota_promedio / 10) * 40  # 40% peso
+    score_asistencia = (asistencia / 100) * 35  # 35% peso
+    score_horas = min((horas_estudio / 20) * 25, 25)  # 25% peso (máx 20h)
+    
+    score_total = score_nota + score_asistencia + score_horas
+    
+    # Determinar riesgo
+    if score_total >= 75:
+        riesgo = "bajo"
+        recomendacion = "Excelente desempeño. Mantén tus hábitos de estudio y asistencia."
+    elif score_total >= 50:
+        riesgo = "medio"
+        recomendacion = "Buen progreso, pero puedes mejorar. Incrementa tus horas de estudio y asistencia."
+    else:
+        riesgo = "alto"
+        recomendacion = "Se requiere intervención urgente. Consulta con tu tutor académico y ajusta tu plan de estudio."
+    
+    return {
+        "riesgo": riesgo,
+        "score": round(score_total, 2),
+        "recomendacion": recomendacion
+    }
 
-@app.get("/api/students")
-def list_students(user=Depends(get_current_user), session: Session = Depends(get_session)):
-    return session.exec(select(Student)).all()
+# ============================================
+# RUTAS - AUTENTICACIÓN
+# ============================================
+
+@app.post("/api/auth/register", response_model=UsuarioResponse, tags=["Autenticación"])
+def registrar_usuario(usuario: UsuarioCreate, session: Session = Depends(get_session)):
+    """
+    Registrar nuevo usuario
+    - Email debe ser @uleam.edu.ec
+    - Contraseña mínimo 6 caracteres
+    """
+    # Validar email ULEAM
+    if not usuario.email.endswith("@uleam.edu.ec"):
+        raise HTTPException(
+            status_code=400,
+            detail="El email debe ser del dominio @uleam.edu.ec"
+        )
+    
+    # Validar contraseña
+    if len(usuario.password) < 6:
+        raise HTTPException(
+            status_code=400,
+            detail="La contraseña debe tener al menos 6 caracteres"
+        )
+    
+    # Verificar si el email ya existe
+    existing = session.exec(select(Usuario).where(Usuario.email == usuario.email)).first()
+    if existing:
+        raise HTTPException(
+            status_code=400,
+            detail="Este email ya está registrado"
+        )
+    
+    # Crear usuario
+    db_usuario = Usuario(
+        nombre=usuario.nombre,
+        email=usuario.email,
+        password_hash=get_password_hash(usuario.password),
+        rol=usuario.rol or "estudiante"
+    )
+    
+    session.add(db_usuario)
+    session.commit()
+    session.refresh(db_usuario)
+    
+    return db_usuario
+
+@app.post("/api/auth/login", tags=["Autenticación"])
+def login(credentials: UsuarioLogin, session: Session = Depends(get_session)):
+    """
+    Login de usuario
+    Retorna JWT token
+    """
+    # Buscar usuario
+    usuario = session.exec(select(Usuario).where(Usuario.email == credentials.email)).first()
+    
+    if not usuario or not verify_password(credentials.password, usuario.password_hash):
+        raise HTTPException(
+            status_code=401,
+            detail="Email o contraseña incorrectos"
+        )
+    
+    # Crear token
+    access_token = create_access_token(data={"sub": usuario.email, "id": usuario.id})
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": usuario.id,
+            "nombre": usuario.nombre,
+            "email": usuario.email,
+            "rol": usuario.rol
+        }
+    }
+
+# ============================================
+# RUTAS - PREDICCIONES
+# ============================================
+
+@app.post("/api/predict", response_model=PrediccionResponse, tags=["Predicciones"])
+def crear_prediccion(prediccion: PrediccionCreate, session: Session = Depends(get_session)):
+    """
+    Crear nueva predicción de rendimiento académico
+    Recibe: nota_promedio (0-10), asistencia (0-100%), horas_estudio (0-50)
+    """
+    # Validaciones
+    if not (0 <= prediccion.nota_promedio <= 10):
+        raise HTTPException(status_code=400, detail="nota_promedio debe estar entre 0 y 10")
+    if not (0 <= prediccion.asistencia <= 100):
+        raise HTTPException(status_code=400, detail="asistencia debe estar entre 0 y 100")
+    if not (0 <= prediccion.horas_estudio <= 50):
+        raise HTTPException(status_code=400, detail="horas_estudio debe estar entre 0 y 50")
+    
+    # Calcular riesgo
+    resultado = calcular_riesgo(
+        prediccion.nota_promedio,
+        prediccion.asistencia,
+        prediccion.horas_estudio
+    )
+    
+    # Guardar predicción
+    db_prediccion = Prediccion(
+        usuario_id=prediccion.usuario_id,
+        nota_promedio=prediccion.nota_promedio,
+        asistencia=prediccion.asistencia,
+        horas_estudio=prediccion.horas_estudio,
+        riesgo=resultado["riesgo"],
+        score=resultado["score"],
+        recomendacion=resultado["recomendacion"]
+    )
+    
+    session.add(db_prediccion)
+    session.commit()
+    session.refresh(db_prediccion)
+    
+    return db_prediccion
+
+@app.get("/api/students", response_model=List[PrediccionResponse], tags=["Predicciones"])
+def listar_predicciones(
+    skip: int = 0,
+    limit: int = 100,
+    session: Session = Depends(get_session)
+):
+    """
+    Listar todas las predicciones
+    Paginación con skip y limit
+    """
+    predicciones = session.exec(select(Prediccion).offset(skip).limit(limit)).all()
+    return predicciones
+
+@app.get("/api/students/{usuario_id}", response_model=List[PrediccionResponse], tags=["Predicciones"])
+def listar_predicciones_usuario(usuario_id: int, session: Session = Depends(get_session)):
+    """
+    Listar predicciones de un usuario específico
+    """
+    predicciones = session.exec(
+        select(Prediccion).where(Prediccion.usuario_id == usuario_id)
+    ).all()
+    return predicciones
+
+# ============================================
+# RUTAS - ESTADÍSTICAS
+# ============================================
+
+@app.get("/api/stats", tags=["Estadísticas"])
+def obtener_estadisticas(session: Session = Depends(get_session)):
+    """
+    Obtener estadísticas generales del sistema
+    """
+    total_usuarios = len(session.exec(select(Usuario)).all())
+    total_predicciones = len(session.exec(select(Prediccion)).all())
+    
+    # Contar por nivel de riesgo
+    predicciones = session.exec(select(Prediccion)).all()
+    riesgo_alto = sum(1 for p in predicciones if p.riesgo == "alto")
+    riesgo_medio = sum(1 for p in predicciones if p.riesgo == "medio")
+    riesgo_bajo = sum(1 for p in predicciones if p.riesgo == "bajo")
+    
+    # Promedio de score
+    avg_score = sum(p.score for p in predicciones) / len(predicciones) if predicciones else 0
+    
+    return {
+        "total_usuarios": total_usuarios,
+        "total_predicciones": total_predicciones,
+        "riesgo_alto": riesgo_alto,
+        "riesgo_medio": riesgo_medio,
+        "riesgo_bajo": riesgo_bajo,
+        "score_promedio": round(avg_score, 2)
+    }
+
+# ============================================
+# RUTA RAÍZ
+# ============================================
+
+@app.get("/", tags=["General"])
+def root():
+    """Endpoint raíz - Información de la API"""
+    return {
+        "app": "EduPredict API",
+        "version": "1.0.0",
+        "description": "Sistema de Predicción de Rendimiento Académico - ULEAM",
+        "docs": "/docs",
+        "redoc": "/redoc"
+    }
+
+@app.get("/health", tags=["General"])
+def health_check():
+    """Health check endpoint"""
+    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
