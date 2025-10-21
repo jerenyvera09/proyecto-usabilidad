@@ -32,17 +32,22 @@ export default function Navbar(){
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3 gap-4">
           <Link to="/" className="flex items-center gap-3 logo-link" title="EduPredict - ULEAM" aria-label="Ir al inicio">
             <div className="logo-animate" id="navbar-logo-wrap">
-              <img 
-                src="/uleam-logo.png" 
-                srcSet="/uleam-logo.png 1x" 
-                alt="ULEAM" 
-                className="w-16 h-16 object-contain logo-img" 
-                role="img"
-                onError={(e) => {
-                  console.warn('[Navbar] Logo no encontrado')
-                  e.target.style.opacity = '0.3'
-                }}
-              />
+              <picture>
+                <source srcSet="/uleam-logo.avif" type="image/avif" />
+                <source srcSet="/uleam-logo.webp" type="image/webp" />
+                <img 
+                  src="/uleam-logo.png" 
+                  alt="ULEAM" 
+                  className="w-16 h-16 object-contain logo-img" 
+                  width="64"
+                  height="64"
+                  loading="lazy"
+                  onError={(e) => {
+                    console.warn('[Navbar] Logo no encontrado')
+                    e.currentTarget.style.opacity = '0.3'
+                  }}
+                />
+              </picture>
             </div>
             <span className="font-extrabold text-lg tracking-tight">EduPredict</span>
           </Link>

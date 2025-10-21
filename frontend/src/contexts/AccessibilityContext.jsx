@@ -28,6 +28,17 @@ export const AccessibilityProvider = ({ children }) => {
     }
   })
 
+  // Escala de fuente (90% - 140%) para A-/A+
+  const [fontScale, setFontScale] = useState(() => {
+    try {
+      const saved = parseInt(localStorage.getItem('fontScale') || '100', 10)
+      if (Number.isFinite(saved)) return Math.min(140, Math.max(90, saved))
+      return 100
+    } catch {
+      return 100
+    }
+  })
+
   const [readingComfort, setReadingComfort] = useState(() => {
     try {
       return localStorage.getItem('readingComfort') === 'true'
@@ -44,7 +55,13 @@ export const AccessibilityProvider = ({ children }) => {
     }
   })
 
-  const [ttsEnabled, setTtsEnabled] = useState(false)
+  const [ttsEnabled, setTtsEnabled] = useState(() => {
+    try {
+      return localStorage.getItem('ttsEnabled') === 'true'
+    } catch {
+      return false
+    }
+  })
 
   // Aplicar alto contraste
   useEffect(() => {
@@ -52,8 +69,10 @@ export const AccessibilityProvider = ({ children }) => {
       localStorage.setItem('highContrast', highContrast.toString())
       if (highContrast) {
         document.documentElement.classList.add('high-contrast')
+        document.documentElement.setAttribute('data-theme', 'high-contrast')
       } else {
         document.documentElement.classList.remove('high-contrast')
+        document.documentElement.removeAttribute('data-theme')
       }
     } catch (error) {
       console.warn('Error aplicando alto contraste:', error)
@@ -73,6 +92,17 @@ export const AccessibilityProvider = ({ children }) => {
       console.warn('Error aplicando tamaño de texto:', error)
     }
   }, [textSize])
+
+  // Aplicar escala de fuente (A-/A+)
+  useEffect(() => {
+    try {
+      localStorage.setItem('fontScale', String(fontScale))
+      // 62.5% technique no usada aquí; ajustamos directamente el html font-size en porcentaje
+      document.documentElement.style.fontSize = `${fontScale}%`
+    } catch (error) {
+      console.warn('Error aplicando escala de fuente:', error)
+    }
+  }, [fontScale])
 
   // Aplicar lectura cómoda
   useEffect(() => {
@@ -102,6 +132,15 @@ export const AccessibilityProvider = ({ children }) => {
     }
   }, [pauseAnimations])
 
+  // Persistir TTS habilitado
+  useEffect(() => {
+    try {
+      localStorage.setItem('ttsEnabled', ttsEnabled.toString())
+    } catch (error) {
+      console.warn('Error guardando preferencia TTS:', error)
+    }
+  }, [ttsEnabled])
+
   // Función de lectura por voz (TTS)
   const speak = (text) => {
     if (!ttsEnabled || !('speechSynthesis' in window)) return
@@ -130,10 +169,27 @@ export const AccessibilityProvider = ({ children }) => {
     }
   }
 
+  // Helpers/togglers expuestos al UI
+  const toggleHighContrast = () => setHighContrast((v) => !v)
+  const toggleReadingComfort = () => setReadingComfort((v) => !v)
+  const togglePauseAnimations = () => setPauseAnimations((v) => !v)
+  const toggleTTS = () => setTtsEnabled((v) => !v)
+
+  const changeTextSize = (size) => {
+    setTextSize(size)
+    // Mantener coherencia con escala (normal=100, large=120)
+    if (size === 'large') setFontScale((prev) => Math.max(prev, 120))
+    if (size === 'normal') setFontScale((prev) => Math.min(prev, 100))
+  }
+
+  const increaseFont = () => setFontScale((s) => Math.min(140, s + 10))
+  const decreaseFont = () => setFontScale((s) => Math.max(90, s - 10))
+
   // Resetear todas las preferencias
   const resetAccessibility = () => {
     setHighContrast(false)
     setTextSize('normal')
+    setFontScale(100)
     setReadingComfort(false)
     setPauseAnimations(false)
     setTtsEnabled(false)
@@ -143,14 +199,23 @@ export const AccessibilityProvider = ({ children }) => {
   const value = {
     highContrast,
     setHighContrast,
+    toggleHighContrast,
     textSize,
     setTextSize,
+    changeTextSize,
+    fontScale,
+    setFontScale,
+    increaseFont,
+    decreaseFont,
     readingComfort,
     setReadingComfort,
+    toggleReadingComfort,
     pauseAnimations,
     setPauseAnimations,
+    togglePauseAnimations,
     ttsEnabled,
     setTtsEnabled,
+    toggleTTS,
     speak,
     stopSpeaking,
     resetAccessibility
