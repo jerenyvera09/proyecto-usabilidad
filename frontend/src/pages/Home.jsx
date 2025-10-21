@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useI18n } from '../contexts/I18nContext'
 import Breadcrumb from '../components/Breadcrumb'
 import HelpModal from '../components/HelpModal'
 import NewsSection from '../components/NewsSection'
 
 export default function Home() {
+  const { t } = useI18n()
   const [helpOpen, setHelpOpen] = useState(false)
   const helpBtnRef = useRef(null)
 
@@ -14,10 +16,10 @@ export default function Home() {
   }, [])
 
   const features = [
-    { icon: '🤖', title: 'Inteligencia Artificial', desc: 'Algoritmo avanzado de predicción de rendimiento académico.' },
-    { icon: '📊', title: 'Visualización de Datos', desc: 'Gráficos intuitivos y reportes detallados.' },
-    { icon: '🔒', title: 'Privacidad Garantizada', desc: 'Tus datos están seguros y protegidos.' },
-    { icon: '💬', title: 'Soporte 24/7', desc: 'Asistencia continua para estudiantes.' }
+    { icon: '🤖', title: t('feature_1_title') || 'Inteligencia Artificial', desc: t('feature_1_desc') || 'Algoritmo avanzado de predicción de rendimiento académico.' },
+    { icon: '📊', title: t('feature_2_title') || 'Visualización de Datos', desc: t('feature_2_desc') || 'Gráficos intuitivos y reportes detallados.' },
+    { icon: '🔒', title: t('feature_3_title') || 'Privacidad Garantizada', desc: t('feature_3_desc') || 'Tus datos están seguros y protegidos.' },
+    { icon: '💬', title: t('feature_4_title') || 'Beneficios', desc: t('feature_4_desc') || 'Intervenciones tempranas para mejorar el rendimiento.' }
   ]
 
   return (
@@ -44,7 +46,7 @@ export default function Home() {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="text-5xl md:text-7xl font-extrabold leading-tight"
             >
-              Bienvenido/a a EduPredict
+              {t('home_title') || 'Predice tu Rendimiento Académico'}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -52,7 +54,7 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto"
             >
-              Sistema web de predicción del rendimiento académico para estudiantes universitarios.
+              {t('home_subtitle') || 'Sistema inteligente de predicción del rendimiento académico para estudiantes universitarios.'}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -63,15 +65,15 @@ export default function Home() {
               <Link
                 to="/prediction"
                 className="btn bg-white text-[#1e3a8a] hover:bg-neutral-100 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transición-all"
-                aria-label="Comenzar con el formulario de predicción"
+                aria-label={t('prediction') || 'Predicción'}
               >
-                🎯 Comenzar
+                🎯 {t('prediction') || 'Predicción'}
               </Link>
               <Link
                 to="/about"
                 className="btn border-2 border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold rounded-xl transición-all"
               >
-                📖 Conocer más
+                📖 {t('cta_learn_more') || 'Conocer más'}
               </Link>
             </motion.div>
           </motion.div>
@@ -94,9 +96,9 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Características Principales</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">{t('offers_title') || 'Características Principales'}</h2>
             <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-              Descubre por qué EduPredict es la mejor herramienta para estudiantes.
+              {t('hero_card_subtitle') || 'Descubre por qué EduPredict es la mejor herramienta para estudiantes.'}
             </p>
           </motion.div>
 
@@ -125,9 +127,9 @@ export default function Home() {
         <div className="container-custom">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             {[
-              { value: '95%', label: 'Precisión del Modelo' },
-              { value: '1,000+', label: 'Estudiantes Beneficiados' },
-              { value: '24/7', label: 'Soporte Disponible' }
+              { value: '95%', label: t('hero_item_4') || 'Precisión del Modelo' },
+              { value: '1,000+', label: t('hero_item_1') || 'Estudiantes Beneficiados' },
+              { value: '24/7', label: t('hero_item_3') || 'Soporte Disponible' }
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -154,15 +156,15 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto space-y-6"
           >
-            <h2 className="text-4xl md:text-5xl font-bold gradient-text">¿Listo para comenzar?</h2>
+            <h2 className="text-4xl md:text-5xl font-bold gradient-text">{t('cta_dashboard') || '¿Listo para comenzar?'}</h2>
             <p className="text-lg text-neutral-600 dark:text-neutral-400">
-              Únete a cientos de estudiantes que ya están mejorando su rendimiento académico.
+              {t('home_subtitle') || 'Únete a cientos de estudiantes que ya están mejorando su rendimiento académico.'}
             </p>
             <Link
               to="/usuarios"
               className="inline-block btn btn-primary px-10 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl"
             >
-              🚀 Crear Cuenta Gratis
+              🚀 {t('login') || 'Crear Cuenta'}
             </Link>
           </motion.div>
         </div>

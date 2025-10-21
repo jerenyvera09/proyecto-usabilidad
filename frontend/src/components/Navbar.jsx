@@ -1,5 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { FaBars, FaTimes, FaSearch, FaChevronDown } from 'react-icons/fa'
+import SearchModal from './SearchModal'
 import { I18nContext } from '../contexts/I18nContext.jsx'
 import { ThemeContext } from '../contexts/ThemeContext.jsx'
 
@@ -7,6 +9,9 @@ export default function Navbar(){
   const { t, lang, setLang } = useContext(I18nContext)
   const { dark, setDark, highContrast, setHighContrast, friendlyFont, setFriendlyFont, readingComfort, setReadingComfort, textSize, setTextSize } = useContext(ThemeContext)
   const [openAcc, setOpenAcc] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
 
   useEffect(() => {
@@ -56,10 +61,40 @@ export default function Navbar(){
             <Link to="/prediction" className="hover:text-brand transition-colors">{t('prediction')}</Link>
             <Link to="/dashboard" className="hover:text-brand transition-colors">{t('dashboard')}</Link>
             <Link to="/history" className="hover:text-brand transition-colors">{t('history')}</Link>
-            <Link to="/about" className="hover:text-brand transition-colors">{t('about')}</Link>
-            <Link to="/contact" className="hover:text-brand transition-colors">{t('contact')}</Link>
+            <div className="relative">
+              <button
+                className="inline-flex items-center gap-1 hover:text-brand transition-colors"
+                onClick={() => setAboutOpen((v) => !v)}
+                aria-expanded={aboutOpen}
+                aria-haspopup="menu"
+              >
+                {t('about')} <FaChevronDown aria-hidden />
+              </button>
+              {aboutOpen && (
+                <div role="menu" className="absolute mt-2 right-0 bg-white dark:bg-gray-800 border rounded-lg shadow-lg w-56 py-2 z-50">
+                  <Link to="/about" className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem" onClick={() => setAboutOpen(false)}>
+                    {t('about')}
+                  </Link>
+                  <Link to="/accesibilidad" className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem" onClick={() => setAboutOpen(false)}>
+                    {t('accessibility_menu') || 'Accesibilidad'}
+                  </Link>
+                  <Link to="/contact" className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700" role="menuitem" onClick={() => setAboutOpen(false)}>
+                    {t('contact')}
+                  </Link>
+                </div>
+              )}
+            </div>
           </nav>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border hover:bg-white/60 dark:hover:bg-gray-800"
+              aria-label="Buscar"
+              title="Buscar (Ctrl+K)"
+            >
+              <FaSearch aria-hidden />
+              <span className="text-sm">{t('search') || 'Buscar'}</span>
+            </button>
             <select 
               value={lang} 
               onChange={e=> setLang(e.target.value)} 
@@ -76,9 +111,44 @@ export default function Navbar(){
             >
               {dark ? '☀' : '🌙'}
             </button>
+            <button
+              onClick={() => setMobileOpen((v) => !v)}
+              className="md:hidden p-2 rounded-lg border ml-1"
+              aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <FaTimes /> : <FaBars />}
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Menú móvil */}
+      {mobileOpen && (
+        <div className="fixed top-[64px] left-0 right-0 z-40 md:hidden bg-white dark:bg-gray-900 border-b dark:border-gray-800 shadow-lg">
+          <nav className="px-6 py-4 space-y-2">
+            <Link to="/" className="block py-2" onClick={() => setMobileOpen(false)}>{t('home')}</Link>
+            <Link to="/prediction" className="block py-2" onClick={() => setMobileOpen(false)}>{t('prediction')}</Link>
+            <Link to="/dashboard" className="block py-2" onClick={() => setMobileOpen(false)}>{t('dashboard')}</Link>
+            <Link to="/history" className="block py-2" onClick={() => setMobileOpen(false)}>{t('history')}</Link>
+            <details className="py-2">
+              <summary className="cursor-pointer inline-flex items-center gap-2">{t('about')}</summary>
+              <div className="ml-4 mt-2 space-y-2">
+                <Link to="/about" className="block" onClick={() => setMobileOpen(false)}>{t('about')}</Link>
+                <Link to="/accesibilidad" className="block" onClick={() => setMobileOpen(false)}>{t('accessibility_menu') || 'Accesibilidad'}</Link>
+                <Link to="/contact" className="block" onClick={() => setMobileOpen(false)}>{t('contact')}</Link>
+              </div>
+            </details>
+            <button
+              onClick={() => { setSearchOpen(true); setMobileOpen(false) }}
+              className="w-full mt-2 inline-flex items-center gap-2 px-3 py-2 rounded-lg border"
+              aria-label="Buscar"
+            >
+              <FaSearch aria-hidden /> <span>{t('search') || 'Buscar'}</span>
+            </button>
+          </nav>
+        </div>
+      )}
 
       <div className="fixed bottom-6 right-6 z-50 pointer-events-none">
         <button
@@ -139,6 +209,9 @@ export default function Navbar(){
           </>
         )}
       </div>
+
+      {/* Buscador */}
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   )
 }

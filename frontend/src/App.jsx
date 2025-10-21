@@ -7,6 +7,7 @@ import Prediction from './pages/Prediction.jsx'
 import History from './pages/History.jsx'
 import About from './pages/About.jsx'
 import Contact from './pages/Contact.jsx'
+import Accesibilidad from './pages/Accesibilidad.jsx'
 
 export default function App(){
   const location = useLocation()
@@ -26,6 +27,7 @@ export default function App(){
           <Route path="/history" element={<History />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/accesibilidad" element={<Accesibilidad />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>

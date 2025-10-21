@@ -14,6 +14,9 @@ const dict = {
   es: {
     language: 'Idioma', darkMode: 'Modo oscuro', lightMode: 'Modo claro', dashboard: 'Dashboard', prediction: 'Predicción', about: 'Acerca', history: 'Historial', contact: 'Contacto', login: 'Ingresar', logout: 'Salir',
     home: 'Inicio',
+    search: 'Buscar',
+    no_results: 'Sin resultados',
+    accessibility_menu: 'Accesibilidad',
     home_title: 'Sistema Web de Predicción del Rendimiento Académico',
     home_subtitle: 'IA que analiza notas, hábitos de estudio y asistencia para anticipar riesgos de deserción estudiantil y facilitar intervenciones tempranas.',
     cta_dashboard: 'Ir al dashboard',
@@ -37,6 +40,9 @@ const dict = {
   en: {
     language: 'Language', darkMode: 'Dark mode', lightMode: 'Light mode', dashboard: 'Dashboard', prediction: 'Prediction', about: 'About', history: 'History', contact: 'Contact', login: 'Login', logout: 'Logout',
     home: 'Home',
+    search: 'Search',
+    no_results: 'No results',
+    accessibility_menu: 'Accessibility',
     home_title: 'Academic Performance Prediction Web System',
     home_subtitle: 'AI that analyzes grades, study habits and attendance to anticipate dropout risks and enable early interventions.',
     cta_dashboard: 'Go to dashboard',
