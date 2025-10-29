@@ -11,6 +11,7 @@ import Contact from './pages/Contact.jsx'
 import Accesibilidad from './pages/Accesibilidad.jsx'
 import Usuarios from './pages/Usuarios.jsx'
 import AdminUsers from './pages/AdminUsers.jsx'
+import TTSTest from './pages/TTSTest.jsx'
 
 export default function App(){
   const location = useLocation()
@@ -34,6 +35,7 @@ export default function App(){
           <Route path="/accesibilidad" element={<Accesibilidad />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/admin" element={<AdminUsers />} />
+          <Route path="/tts-test" element={<TTSTest />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
