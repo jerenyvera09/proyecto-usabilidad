@@ -63,6 +63,38 @@ export const AccessibilityProvider = ({ children }) => {
     }
   })
 
+  const [focusVisible, setFocusVisible] = useState(() => {
+    try {
+      return localStorage.getItem('focusVisible') === 'true'
+    } catch {
+      return false
+    }
+  })
+
+  const [keyboardNavigation, setKeyboardNavigation] = useState(() => {
+    try {
+      return localStorage.getItem('keyboardNavigation') === 'true'
+    } catch {
+      return false
+    }
+  })
+
+  const [blockAutoScroll, setBlockAutoScroll] = useState(() => {
+    try {
+      return localStorage.getItem('blockAutoScroll') === 'true'
+    } catch {
+      return false
+    }
+  })
+
+  const [blockAutoAudio, setBlockAutoAudio] = useState(() => {
+    try {
+      return localStorage.getItem('blockAutoAudio') === 'true'
+    } catch {
+      return false
+    }
+  })
+
   // Aplicar alto contraste
   useEffect(() => {
     try {
@@ -141,6 +173,69 @@ export const AccessibilityProvider = ({ children }) => {
     }
   }, [ttsEnabled])
 
+  // Aplicar foco visible mejorado
+  useEffect(() => {
+    try {
+      localStorage.setItem('focusVisible', focusVisible.toString())
+      if (focusVisible) {
+        document.documentElement.classList.add('focus-visible-enhanced')
+      } else {
+        document.documentElement.classList.remove('focus-visible-enhanced')
+      }
+    } catch (error) {
+      console.warn('Error aplicando foco visible:', error)
+    }
+  }, [focusVisible])
+
+  // Aplicar navegación por teclado mejorada
+  useEffect(() => {
+    try {
+      localStorage.setItem('keyboardNavigation', keyboardNavigation.toString())
+      if (keyboardNavigation) {
+        document.documentElement.classList.add('keyboard-navigation-enhanced')
+      } else {
+        document.documentElement.classList.remove('keyboard-navigation-enhanced')
+      }
+    } catch (error) {
+      console.warn('Error aplicando navegación por teclado:', error)
+    }
+  }, [keyboardNavigation])
+
+  // Bloquear auto-scroll
+  useEffect(() => {
+    try {
+      localStorage.setItem('blockAutoScroll', blockAutoScroll.toString())
+      if (blockAutoScroll) {
+        document.documentElement.style.scrollBehavior = 'auto'
+        document.documentElement.classList.add('block-auto-scroll')
+      } else {
+        document.documentElement.style.scrollBehavior = ''
+        document.documentElement.classList.remove('block-auto-scroll')
+      }
+    } catch (error) {
+      console.warn('Error bloqueando auto-scroll:', error)
+    }
+  }, [blockAutoScroll])
+
+  // Bloquear auto-audio
+  useEffect(() => {
+    try {
+      localStorage.setItem('blockAutoAudio', blockAutoAudio.toString())
+      if (blockAutoAudio) {
+        document.documentElement.classList.add('block-auto-audio')
+        // Pausar todos los elementos de audio y video
+        document.querySelectorAll('audio, video').forEach(media => {
+          media.pause()
+          media.autoplay = false
+        })
+      } else {
+        document.documentElement.classList.remove('block-auto-audio')
+      }
+    } catch (error) {
+      console.warn('Error bloqueando auto-audio:', error)
+    }
+  }, [blockAutoAudio])
+
   // Función de lectura por voz (TTS)
   const speak = (text) => {
     if (!('speechSynthesis' in window)) {
@@ -206,6 +301,10 @@ export const AccessibilityProvider = ({ children }) => {
   const toggleReadingComfort = () => setReadingComfort((v) => !v)
   const togglePauseAnimations = () => setPauseAnimations((v) => !v)
   const toggleTTS = () => setTtsEnabled((v) => !v)
+  const toggleFocusVisible = () => setFocusVisible((v) => !v)
+  const toggleKeyboardNavigation = () => setKeyboardNavigation((v) => !v)
+  const toggleBlockAutoScroll = () => setBlockAutoScroll((v) => !v)
+  const toggleBlockAutoAudio = () => setBlockAutoAudio((v) => !v)
 
   const changeTextSize = (size) => {
     setTextSize(size)
@@ -225,6 +324,10 @@ export const AccessibilityProvider = ({ children }) => {
     setReadingComfort(false)
     setPauseAnimations(false)
     setTtsEnabled(false)
+    setFocusVisible(false)
+    setKeyboardNavigation(false)
+    setBlockAutoScroll(false)
+    setBlockAutoAudio(false)
     stopSpeaking()
   }
 
@@ -248,6 +351,18 @@ export const AccessibilityProvider = ({ children }) => {
     ttsEnabled,
     setTtsEnabled,
     toggleTTS,
+    focusVisible,
+    setFocusVisible,
+    toggleFocusVisible,
+    keyboardNavigation,
+    setKeyboardNavigation,
+    toggleKeyboardNavigation,
+    blockAutoScroll,
+    setBlockAutoScroll,
+    toggleBlockAutoScroll,
+    blockAutoAudio,
+    setBlockAutoAudio,
+    toggleBlockAutoAudio,
     speak,
     stopSpeaking,
     resetAccessibility

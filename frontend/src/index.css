@@ -214,3 +214,137 @@
 [data-tooltip]:focus::after {
   @apply opacity-100;
 }
+
+/* ============================================
+   ESTILOS DE ACCESIBILIDAD MEJORADOS (WCAG 2.1 AA)
+   ============================================ */
+
+/* Foco visible mejorado - Resalta enlaces y elementos interactivos */
+.focus-visible-enhanced a:focus,
+.focus-visible-enhanced button:focus,
+.focus-visible-enhanced input:focus,
+.focus-visible-enhanced select:focus,
+.focus-visible-enhanced textarea:focus,
+.focus-visible-enhanced [tabindex]:focus {
+  @apply outline-none;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.6), 
+              0 0 0 8px rgba(59, 130, 246, 0.3) !important;
+  border: 3px solid #3b82f6 !important;
+  border-radius: 6px;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.focus-visible-enhanced a:focus {
+  text-decoration: underline !important;
+  text-decoration-thickness: 3px !important;
+  text-underline-offset: 4px !important;
+}
+
+/* Navegación por teclado mejorada */
+.keyboard-navigation-enhanced {
+  scroll-behavior: smooth;
+}
+
+.keyboard-navigation-enhanced a,
+.keyboard-navigation-enhanced button,
+.keyboard-navigation-enhanced [role="button"],
+.keyboard-navigation-enhanced [tabindex="0"] {
+  position: relative;
+}
+
+.keyboard-navigation-enhanced a::before,
+.keyboard-navigation-enhanced button::before,
+.keyboard-navigation-enhanced [role="button"]::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px dashed transparent;
+  border-radius: 8px;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.keyboard-navigation-enhanced a:focus::before,
+.keyboard-navigation-enhanced button:focus::before,
+.keyboard-navigation-enhanced [role="button"]:focus::before {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Indicador visual de navegación con Tab */
+.keyboard-navigation-enhanced *:focus {
+  animation: focusPulse 0.6s ease-in-out;
+}
+
+@keyframes focusPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Bloqueo de auto-scroll */
+.block-auto-scroll {
+  scroll-behavior: auto !important;
+}
+
+.block-auto-scroll * {
+  scroll-behavior: auto !important;
+}
+
+/* Bloqueo de auto-audio */
+.block-auto-audio audio,
+.block-auto-audio video {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.block-auto-audio audio::before,
+.block-auto-audio video::before {
+  content: '🔇 Audio/Video bloqueado';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  z-index: 10;
+}
+
+/* Mejoras adicionales para alto contraste */
+.high-contrast a {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  font-weight: 600 !important;
+}
+
+.high-contrast button {
+  border: 2px solid currentColor !important;
+  font-weight: 700 !important;
+}
+
+/* Indicadores de estado para elementos interactivos */
+.focus-visible-enhanced [aria-pressed="true"],
+.focus-visible-enhanced [aria-checked="true"],
+.focus-visible-enhanced [aria-selected="true"] {
+  @apply ring-4 ring-green-400 ring-offset-2;
+}
+
+.focus-visible-enhanced [aria-invalid="true"] {
+  @apply ring-4 ring-red-400 ring-offset-2;
+}
+
+/* Skip link mejorado */
+.skip-link:focus {
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.8) !important;
+  transform: translateY(0) scale(1.05) !important;
+}

@@ -14,6 +14,14 @@ export default function AccessibilityMenu() {
     togglePauseAnimations,
     ttsEnabled,
     toggleTTS,
+    focusVisible,
+    toggleFocusVisible,
+    keyboardNavigation,
+    toggleKeyboardNavigation,
+    blockAutoScroll,
+    toggleBlockAutoScroll,
+    blockAutoAudio,
+    toggleBlockAutoAudio,
     speak,
     stopSpeaking,
     fontScale,
@@ -152,7 +160,7 @@ export default function AccessibilityMenu() {
             </div>
 
             {/* Contenido */}
-            <div className="p-4 space-y-4 max-h-[520px] overflow-y-auto">
+            <div className="p-4 space-y-4 max-h-[600px] overflow-y-auto">
               {/* Modo claro/oscuro */}
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">🌗 Modo oscuro</span>
@@ -229,6 +237,58 @@ export default function AccessibilityMenu() {
                   aria-label="Alternar pausa de animaciones"
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${pauseAnimations ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+
+              {/* Foco visible / Resaltar enlaces */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">🎯 Resaltar foco / enlaces</span>
+                <button
+                  onClick={() => { toggleFocusVisible(); announceChange(`Resaltado de foco ${!focusVisible ? 'activado' : 'desactivado'}`) }}
+                  className={`w-12 h-6 rounded-full transition-colors focus-visible ${focusVisible ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
+                  aria-pressed={focusVisible}
+                  aria-label="Alternar resaltado de foco y enlaces"
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${focusVisible ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+
+              {/* Navegación por teclado mejorada */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">⌨️ Navegación teclado</span>
+                <button
+                  onClick={() => { toggleKeyboardNavigation(); announceChange(`Navegación por teclado ${!keyboardNavigation ? 'mejorada' : 'normal'}`) }}
+                  className={`w-12 h-6 rounded-full transition-colors focus-visible ${keyboardNavigation ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
+                  aria-pressed={keyboardNavigation}
+                  aria-label="Alternar navegación por teclado mejorada"
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${keyboardNavigation ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+
+              {/* Bloquear auto-scroll */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">🚫 Bloquear auto-scroll</span>
+                <button
+                  onClick={() => { toggleBlockAutoScroll(); announceChange(`Auto-scroll ${!blockAutoScroll ? 'bloqueado' : 'permitido'}`) }}
+                  className={`w-12 h-6 rounded-full transition-colors focus-visible ${blockAutoScroll ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
+                  aria-pressed={blockAutoScroll}
+                  aria-label="Alternar bloqueo de scroll automático"
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${blockAutoScroll ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+
+              {/* Bloquear auto-audio */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">🔇 Bloquear auto-audio</span>
+                <button
+                  onClick={() => { toggleBlockAutoAudio(); announceChange(`Auto-audio ${!blockAutoAudio ? 'bloqueado' : 'permitido'}`) }}
+                  className={`w-12 h-6 rounded-full transition-colors focus-visible ${blockAutoAudio ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
+                  aria-pressed={blockAutoAudio}
+                  aria-label="Alternar bloqueo de audio/video automático"
+                >
+                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${blockAutoAudio ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
               </div>
 
