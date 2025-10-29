@@ -244,12 +244,27 @@ export default function AccessibilityMenu() {
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${ttsEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
               </div>
-              {ttsEnabled && (
-                <div className="space-y-2">
-                  <button onClick={speakSelection} className="btn-secondary w-full text-sm py-2">🎤 Leer selección</button>
-                  <button onClick={() => { stopSpeaking(); announceChange('Lectura detenida') }} className="btn-outline w-full text-sm py-2">⏹️ Detener lectura</button>
-                </div>
-              )}
+              
+              {/* Botones de prueba TTS - siempre visibles */}
+              <div className="space-y-2 pt-2">
+                <button 
+                  onClick={() => {
+                    const text = window.getSelection?.()?.toString?.()?.trim() || 
+                                 'Hola, soy el sistema de texto a voz de EduPredict. Esta es una prueba de lectura.'
+                    speak(text)
+                  }} 
+                  className="btn-secondary w-full text-sm py-2 flex items-center justify-center gap-2"
+                  title="Leer texto seleccionado o mensaje de prueba"
+                >
+                  🎤 Leer {ttsEnabled ? 'selección' : 'prueba'}
+                </button>
+                <button 
+                  onClick={() => { stopSpeaking(); announceChange('Lectura detenida') }} 
+                  className="btn-outline w-full text-sm py-2 flex items-center justify-center gap-2"
+                >
+                  ⏹️ Detener lectura
+                </button>
+              </div>
 
               <Link
                 to="/accesibilidad"

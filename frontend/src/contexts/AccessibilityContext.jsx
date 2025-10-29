@@ -143,7 +143,11 @@ export const AccessibilityProvider = ({ children }) => {
 
   // Función de lectura por voz (TTS)
   const speak = (text) => {
-    if (!ttsEnabled || !('speechSynthesis' in window)) return
+    if (!('speechSynthesis' in window)) {
+      console.warn('Tu navegador no soporta la API de síntesis de voz')
+      alert('Tu navegador no soporta la función de texto a voz. Intenta usar Chrome, Edge o Safari.')
+      return
+    }
 
     try {
       // Cancelar cualquier lectura en curso
@@ -151,19 +155,47 @@ export const AccessibilityProvider = ({ children }) => {
 
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = 'es-ES'
-      utterance.rate = 0.9
+      utterance.rate = 0.95
       utterance.pitch = 1
       utterance.volume = 1
+
+      // Listeners para debugging
+      utterance.onstart = () => {
+        console.log('🔊 TTS iniciado:', text.substring(0, 50) + '...')
+      }
+
+      utterance.onend = () => {
+        console.log('✅ TTS finalizado')
+      }
+
+      utterance.onerror = (event) => {
+        console.error('❌ Error en TTS:', event)
+      }
+
+      // Esperar a que las voces estén cargadas (fix para Chrome)
+      const voices = window.speechSynthesis.getVoices()
+      if (voices.length > 0) {
+        // Buscar voz en español
+        const spanishVoice = voices.find(voice => voice.lang.startsWith('es'))
+        if (spanishVoice) {
+          utterance.voice = spanishVoice
+          console.log('🎤 Usando voz:', spanishVoice.name)
+        }
+      }
 
       window.speechSynthesis.speak(utterance)
     } catch (error) {
       console.error('Error en TTS:', error)
+      alert('Error al reproducir el texto a voz: ' + error.message)
     }
   }
 
   const stopSpeaking = () => {
     try {
-      window.speechSynthesis.cancel()
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel()
+        console.log('⏹️ TTS detenido')
+      }
     } catch (error) {
       console.error('Error deteniendo TTS:', error)
     }
