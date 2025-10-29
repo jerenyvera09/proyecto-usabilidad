@@ -1,35 +1,24 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FaBars, FaTimes, FaSearch, FaChevronDown } from 'react-icons/fa'
+import { FaBars, FaTimes, FaSearch, FaChevronDown, FaHome, FaRegChartBar, FaTachometerAlt, FaHistory, FaSignInAlt, FaUserCircle } from 'react-icons/fa'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import SearchModal from './SearchModal'
 import { I18nContext } from '../contexts/I18nContext.jsx'
 import { ThemeContext } from '../contexts/ThemeContext.jsx'
 
 export default function Navbar(){
   const { t, lang, setLang } = useContext(I18nContext)
-  const { dark, setDark, highContrast, setHighContrast, friendlyFont, setFriendlyFont, readingComfort, setReadingComfort, textSize, setTextSize } = useContext(ThemeContext)
-  const [openAcc, setOpenAcc] = useState(false)
+  const { dark, /* setDark removed from navbar - moved to AccessibilityMenu */ highContrast, setHighContrast, friendlyFont, setFriendlyFont, readingComfort, setReadingComfort, textSize, setTextSize } = useContext(ThemeContext)
+  const { user, logout } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
-  const [isClosing, setIsClosing] = useState(false)
 
   useEffect(() => {
     console.log('[Navbar] Montado correctamente')
   }, [])
 
-  const openPanel = () => {
-    setIsClosing(false)
-    setOpenAcc(true)
-  }
-
-  const closePanel = () => {
-    setIsClosing(true)
-    window.setTimeout(() => {
-      setOpenAcc(false)
-      setIsClosing(false)
-    }, 240)
-  }
+  
 
   return (
     <>
@@ -57,10 +46,18 @@ export default function Navbar(){
             <span className="font-extrabold text-lg tracking-tight">EduPredict</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="hover:text-brand transition-colors">{t('home')}</Link>
-            <Link to="/prediction" className="hover:text-brand transition-colors">{t('prediction')}</Link>
-            <Link to="/dashboard" className="hover:text-brand transition-colors">{t('dashboard')}</Link>
-            <Link to="/history" className="hover:text-brand transition-colors">{t('history')}</Link>
+            <Link to="/" className="inline-flex items-center gap-2 transition-colors hover:text-primary-600">
+              <FaHome aria-hidden /> <span>{t('home')}</span>
+            </Link>
+            <Link to="/prediction" className="inline-flex items-center gap-2 transition-colors hover:text-primary-600">
+              <FaRegChartBar aria-hidden /> <span>{t('prediction')}</span>
+            </Link>
+            <Link to="/dashboard" className="inline-flex items-center gap-2 transition-colors hover:text-primary-600">
+              <FaTachometerAlt aria-hidden /> <span>{t('dashboard')}</span>
+            </Link>
+            <Link to="/history" className="inline-flex items-center gap-2 transition-colors hover:text-primary-600">
+              <FaHistory aria-hidden /> <span>{t('history')}</span>
+            </Link>
             <div className="relative">
               <button
                 className="inline-flex items-center gap-1 hover:text-brand transition-colors"
@@ -104,13 +101,27 @@ export default function Navbar(){
               <option value="es">ES</option>
               <option value="en">EN</option>
             </select>
-            <button 
-              onClick={()=> setDark(!dark)} 
-              className="px-3 py-1 rounded-full bg-gradient-to-r from-[var(--gradient-start)] to-[var(--gradient-end)] text-white shadow-sm hover:shadow-md transition-shadow" 
-              aria-label={dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            >
-              {dark ? '☀' : '🌙'}
-            </button>
+            {/* Modo oscuro se gestiona ahora desde el menú de accesibilidad */}
+
+            {/* Auth actions: mostrar usuario o enlace de inicio de sesión */}
+            {!user ? (
+              <Link to="/usuarios" className="inline-flex items-center gap-2 px-3 py-1 rounded-md border transition-colors hover:text-primary-600">
+                <FaSignInAlt aria-hidden /> <span className="text-sm">{t('login') || 'Login'}</span>
+              </Link>
+            ) : (
+              <div className="relative">
+                <button className="inline-flex items-center gap-2 px-3 py-1 rounded-md border" aria-haspopup="menu" aria-expanded="false" title={user?.nombre || user?.email}>
+                  <FaUserCircle aria-hidden /> <span className="text-sm">{user?.nombre || user?.email}</span>
+                </button>
+                <div className="absolute mt-2 right-0 bg-white dark:bg-gray-800 border rounded-lg shadow-lg w-48 py-2 z-50">
+                  <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => {}}>{t('dashboard')}</Link>
+                  {user?.is_admin && (
+                    <Link to="/admin" className="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">Administrar usuarios</Link>
+                  )}
+                  <button onClick={() => logout()} className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">{t('logout') || 'Logout'}</button>
+                </div>
+              </div>
+            )}
             <button
               onClick={() => setMobileOpen((v) => !v)}
               className="md:hidden p-2 rounded-lg border ml-1"
@@ -127,16 +138,16 @@ export default function Navbar(){
       {mobileOpen && (
         <div className="fixed top-[64px] left-0 right-0 z-40 md:hidden bg-white dark:bg-gray-900 border-b dark:border-gray-800 shadow-lg">
           <nav className="px-6 py-4 space-y-2">
-            <Link to="/" className="block py-2" onClick={() => setMobileOpen(false)}>{t('home')}</Link>
-            <Link to="/prediction" className="block py-2" onClick={() => setMobileOpen(false)}>{t('prediction')}</Link>
-            <Link to="/dashboard" className="block py-2" onClick={() => setMobileOpen(false)}>{t('dashboard')}</Link>
-            <Link to="/history" className="block py-2" onClick={() => setMobileOpen(false)}>{t('history')}</Link>
+            <Link to="/" className="block py-2 hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('home')}</Link>
+            <Link to="/prediction" className="block py-2 hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('prediction')}</Link>
+            <Link to="/dashboard" className="block py-2 hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('dashboard')}</Link>
+            <Link to="/history" className="block py-2 hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('history')}</Link>
             <details className="py-2">
               <summary className="cursor-pointer inline-flex items-center gap-2">{t('about')}</summary>
               <div className="ml-4 mt-2 space-y-2">
-                <Link to="/about" className="block" onClick={() => setMobileOpen(false)}>{t('about')}</Link>
-                <Link to="/accesibilidad" className="block" onClick={() => setMobileOpen(false)}>{t('accessibility_menu') || 'Accesibilidad'}</Link>
-                <Link to="/contact" className="block" onClick={() => setMobileOpen(false)}>{t('contact')}</Link>
+                <Link to="/about" className="block hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('about')}</Link>
+                <Link to="/accesibilidad" className="block hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('accessibility_menu') || 'Accesibilidad'}</Link>
+                <Link to="/contact" className="block hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('contact')}</Link>
               </div>
             </details>
             <button
@@ -146,69 +157,16 @@ export default function Navbar(){
             >
               <FaSearch aria-hidden /> <span>{t('search') || 'Buscar'}</span>
             </button>
+            {!user ? (
+              <Link to="/usuarios" className="block py-2 mt-2 hover:text-primary-600" onClick={() => setMobileOpen(false)}>{t('login') || 'Login'}</Link>
+            ) : (
+              <button onClick={() => { logout(); setMobileOpen(false) }} className="block py-2 mt-2 text-left hover:text-primary-600">{t('logout') || 'Logout'}</button>
+            )}
           </nav>
         </div>
       )}
 
-      <div className="fixed bottom-6 right-6 z-50 pointer-events-none">
-        <button
-          onClick={() => (openAcc ? closePanel() : openPanel()) }
-          className="pointer-events-auto floating-settings w-14 h-14 rounded-full flex items-center justify-center shadow-2xl"
-          aria-label={openAcc ? 'Cerrar ajustes' : 'Abrir ajustes'}
-          title="Ajustes"
-        >
-          {openAcc ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <path d="M6 6L18 18M6 18L18 6" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          ) : (
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-              <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" fill="white" opacity="0.95" />
-              <path d="M19.4 15a1 1 0 0 0 .2 1.09l.07.07a1 1 0 0 1 0 1.41l-1.41 1.41a1 1 0 0 1-1.41 0l-.07-.07A1 1 0 0 0 15 19.4a7 7 0 0 1-6 0 1 1 0 0 0-1.09.2l-.07.07a1 1 0 0 1-1.41 0L4 18.26a1 1 0 0 1 0-1.41l.07-.07A1 1 0 0 0 4.6 15a7 7 0 0 1 0-6 1 1 0 0 0-.2-1.09l-.07-.07a1 1 0 0 1 0-1.41L5.74 4a1 1 0 0 1 1.41 0l.07.07A1 1 0 0 0 8.6 4.6a7 7 0 0 1 6 0 1 1 0 0 0 1.09-.2l.07-.07a1 1 0 0 1 1.41 0L19.4 6a1 1 0 0 1 0 1.41l-.07.07A1 1 0 0 0 19.4 9a7 7 0 0 1 0 6z" fill="rgba(0,0,0,0.12)" />
-            </svg>
-          )}
-        </button>
-
-        {(openAcc || isClosing) && (
-          <>
-            {/* removed overlay so background page doesn't blur or dim */}
-
-            <div role="dialog" aria-modal="true" className={`pointer-events-auto settings-panel w-80 md:w-96 bg-white dark:bg-gray-800 border rounded-xl p-4 shadow-2xl ${isClosing ? 'panel-exit' : 'panel-enter'}`}>
-              <div className="flex items-start justify-between">
-                <div className="text-sm font-semibold">Ajustes de accesibilidad</div>
-              </div>
-              <div className="mt-3">
-                <label className="flex items-start justify-between text-sm mb-3">
-                  <div>
-                    <div className="font-medium">Alto contraste</div>
-                    <div className="text-xs text-gray-500">Aumenta el contraste entre texto y fondo para mejorar la legibilidad.</div>
-                  </div>
-                  <input type="checkbox" checked={highContrast} onChange={e=> setHighContrast(e.target.checked)} />
-                </label>
-                <label className="flex items-start justify-between text-sm mb-3">
-                  <div>
-                    <div className="font-medium">Fuente amigable</div>
-                    <div className="text-xs text-gray-500">Activa una tipografía optimizada para dislexia y fatiga visual.</div>
-                  </div>
-                  <input type="checkbox" checked={friendlyFont} onChange={e=> setFriendlyFont(e.target.checked)} />
-                </label>
-                <label className="flex items-start justify-between text-sm mb-3">
-                  <div>
-                    <div className="font-medium">Comodidad de lectura</div>
-                    <div className="text-xs text-gray-500">Ajusta interlineado y espaciado para facilitar la lectura prolongada.</div>
-                  </div>
-                  <input type="checkbox" checked={readingComfort} onChange={e=> setReadingComfort(e.target.checked)} />
-                </label>
-                <div className="mt-2 text-sm font-medium">Tamaño del texto</div>
-                <div className="flex gap-2 mt-1">
-                  <button className={`px-2 py-1 border rounded ${textSize==='normal' ? 'bg-gray-100' : ''}`} onClick={()=> setTextSize('normal')}>Normal</button>
-                  <button className={`px-2 py-1 border rounded ${textSize==='large' ? 'bg-gray-100' : ''}`} onClick={()=> setTextSize('large')}>Grande</button>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
+      {/* Accessibility menu moved to its own component (AccessibilityMenu) to avoid duplication */}
 
       {/* Buscador */}
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
