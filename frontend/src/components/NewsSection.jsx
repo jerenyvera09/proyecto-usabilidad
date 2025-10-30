@@ -1,30 +1,33 @@
 import { motion } from 'framer-motion'
 import { FaBolt, FaFlask, FaRocket } from 'react-icons/fa'
+import { useI18n } from '../contexts/I18nContext.jsx'
 
-const items = [
+const items = (t) => [
   {
     icon: <FaBolt className="text-[#8b5cf6]" aria-hidden />,
-    title: 'Últimas mejoras',
-    desc: 'Optimización de carga inicial y mejora de accesibilidad (WCAG 2.2 AA).'
+    title: t('news_latest_title') || 'Últimas mejoras',
+    desc: t('news_latest_desc') || 'Optimización de carga inicial y mejora de accesibilidad (WCAG 2.2 AA).'
   },
   {
     icon: <FaFlask className="text-[#1e3a8a]" aria-hidden />,
-    title: 'Nuevas funciones',
-    desc: 'Ayuda contextual accesible y rutas mejor definidas para el formulario.'
+    title: t('news_new_title') || 'Nuevas funciones',
+    desc: t('news_new_desc') || 'Ayuda contextual accesible y rutas mejor definidas para el formulario.'
   },
   {
     icon: <FaRocket className="text-[#3b82f6]" aria-hidden />,
-    title: 'Próximas versiones',
-    desc: 'Historial de predicciones con exportación y panel de seguimiento.'
+    title: t('news_next_title') || 'Próximas versiones',
+    desc: t('news_next_desc') || 'Historial de predicciones con exportación y panel de seguimiento.'
   }
 ]
 
 export default function NewsSection(){
+  const { t } = useI18n()
+
   return (
     <section className="py-14 bg-white dark:bg-neutral-900">
       <div className="container-custom">
         <div className="grid md:grid-cols-3 gap-6">
-          {items.map((card, i) => (
+          {items(t).map((card, i) => (
             <motion.article
               key={i}
               initial={{ opacity: 0, y: 20 }}

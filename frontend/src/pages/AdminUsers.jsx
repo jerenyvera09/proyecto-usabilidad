@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 
 export default function AdminUsers(){
   const { user } = useAuth()
+  const { t } = useI18n()
   const [form, setForm] = useState({ nombre: '', email: '', password: '', role: 'user' })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -61,8 +62,8 @@ export default function AdminUsers(){
     return (
       <div className="container-custom py-12">
         <div className="card p-8 max-w-lg mx-auto text-center">
-          <h2 className="text-2xl font-semibold mb-4">Acceso denegado</h2>
-          <p>Necesitas permisos de administrador para acceder a esta sección.</p>
+          <h2 className="text-2xl font-semibold mb-4">{t('access_denied') || 'Acceso denegado'}</h2>
+          <p>{t('access_admin_required') || 'Necesitas permisos de administrador para acceder a esta sección.'}</p>
         </div>
       </div>
     )
@@ -99,19 +100,19 @@ export default function AdminUsers(){
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="label" htmlFor="nombre">Nombre</label>
+            <label className="label" htmlFor="nombre">{t('label_name') || 'Nombre'}</label>
             <input id="nombre" value={form.nombre} onChange={e=> setForm({...form, nombre: e.target.value})} className="input w-full" />
           </div>
           <div>
-            <label className="label" htmlFor="email">Email</label>
+            <label className="label" htmlFor="email">{t('label_email') || 'Email'}</label>
             <input id="email" value={form.email} onChange={e=> setForm({...form, email: e.target.value})} className="input w-full" />
           </div>
           <div>
-            <label className="label" htmlFor="password">Contraseña</label>
+            <label className="label" htmlFor="password">{t('label_password') || 'Contraseña'}</label>
             <input id="password" type="password" value={form.password} onChange={e=> setForm({...form, password: e.target.value})} className="input w-full" />
           </div>
           <div>
-            <label className="label" htmlFor="role">Rol</label>
+            <label className="label" htmlFor="role">{t('label_role') || 'Rol'}</label>
             <select id="role" value={form.role} onChange={e=> setForm({...form, role: e.target.value})} className="input w-full">
               <option value="user">Usuario</option>
               <option value="admin">Administrador</option>

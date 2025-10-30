@@ -23,46 +23,46 @@ export default function Accesibilidad() {
   const features = [
     {
       icon: '🎨',
-      title: 'Alto Contraste',
-      desc: 'Mejora la visibilidad con un contraste mínimo de 4.5:1 (WCAG 2.2 Level AA)',
+      title: t('accessibility_feature_high_contrast_title') || 'Alto Contraste',
+      desc: t('accessibility_feature_high_contrast_desc') || 'Mejora la visibilidad con un contraste mínimo de 4.5:1 (WCAG 2.2 Level AA)',
       active: highContrast,
       toggle: toggleHighContrast
     },
     {
       icon: '🔠',
-      title: 'Ajuste de Texto',
-      desc: 'Aumenta el tamaño del texto para mayor legibilidad',
+      title: t('accessibility_feature_text_size_title') || 'Ajuste de Texto',
+      desc: t('accessibility_feature_text_size_desc') || 'Aumenta el tamaño del texto para mayor legibilidad',
       active: textSize === 'large',
       toggle: () => changeTextSize(textSize === 'large' ? 'normal' : 'large')
     },
     {
       icon: '📖',
-      title: 'Modo Lectura',
-      desc: 'Mejora el espaciado entre líneas y letras para facilitar la lectura',
+      title: t('accessibility_feature_reading_title') || 'Modo Lectura',
+      desc: t('accessibility_feature_reading_desc') || 'Mejora el espaciado entre líneas y letras para facilitar la lectura',
       active: readingComfort,
       toggle: toggleReadingComfort
     },
     {
       icon: '⏸️',
-      title: 'Pausar Animaciones',
-      desc: 'Desactiva todas las animaciones y transiciones',
+      title: t('accessibility_feature_pause_title') || 'Pausar Animaciones',
+      desc: t('accessibility_feature_pause_desc') || 'Desactiva todas las animaciones y transiciones',
       active: pauseAnimations,
       toggle: togglePauseAnimations
     },
     {
       icon: '🔊',
-      title: 'Texto a Voz (TTS)',
-      desc: 'Lee el contenido en voz alta con la API Web Speech',
+      title: t('accessibility_feature_tts_title') || 'Texto a Voz (TTS)',
+      desc: t('accessibility_feature_tts_desc') || 'Lee el contenido en voz alta con la API Web Speech',
       active: ttsEnabled,
       toggle: toggleTTS
     }
   ]
 
   const shortcuts = [
-    { key: 'Alt + 1', action: 'Abrir menú de accesibilidad' },
-    { key: 'Tab', action: 'Navegar entre elementos' },
-    { key: 'Enter / Espacio', action: 'Activar elemento' },
-    { key: 'Esc', action: 'Cerrar modales/menús' }
+    { key: 'Alt + 1', action: t('shortcut_open_menu') || 'Abrir menú de accesibilidad' },
+    { key: 'Tab', action: t('shortcut_tab') || 'Navegar entre elementos' },
+    { key: 'Enter / Espacio', action: t('shortcut_activate') || 'Activar elemento' },
+    { key: 'Esc', action: t('shortcut_close') || 'Cerrar modales/menús' }
   ]
 
   return (
@@ -89,7 +89,7 @@ export default function Accesibilidad() {
           transition={{ delay: 0.1 }}
           className="mb-12"
         >
-          <h2 className="text-3xl font-bold mb-6">🛠️ Funciones Disponibles</h2>
+          <h2 className="text-3xl font-bold mb-6">🛠️ {t('accessibility_features_title') || 'Funciones Disponibles'}</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {features.map((feat, i) => (
               <motion.div
@@ -131,7 +131,7 @@ export default function Accesibilidad() {
                     className="mt-3 pt-3 border-t border-primary-200 dark:border-primary-800"
                   >
                     <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                      ✅ Activo
+                      ✅ {t('accessibility_active') || 'Activo'}
                     </span>
                   </motion.div>
                 )}
@@ -147,10 +147,10 @@ export default function Accesibilidad() {
             animate={{ opacity: 1, y: 0 }}
             className="card p-6 mb-12 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20"
           >
-            <h3 className="text-xl font-bold mb-4">🎤 Prueba el Texto a Voz</h3>
-            <p className="mb-4 text-neutral-700 dark:text-neutral-300">
-              {t('accessibility_tts_test') || 'Hola, soy el sistema de texto a voz de EduPredict. Puedo leer cualquier contenido en voz alta para ayudarte.'}
-            </p>
+            <h3 className="text-xl font-bold mb-4">🎤 {t('accessibility_tts') || 'Prueba el Texto a Voz'}</h3>
+              <p className="mb-4 text-neutral-700 dark:text-neutral-300">
+                {t('accessibility_tts_test')}
+              </p>
             <div className="flex gap-3">
               <button
                 onClick={() => speak(t('accessibility_tts_test') || 'Hola, soy el sistema de texto a voz de EduPredict.')}
@@ -175,7 +175,7 @@ export default function Accesibilidad() {
           transition={{ delay: 0.3 }}
           className="mb-12"
         >
-          <h2 className="text-3xl font-bold mb-6">⌨️ Atajos de Teclado</h2>
+          <h2 className="text-3xl font-bold mb-6">⌨️ {t('accessibility_shortcuts_title') || 'Atajos de Teclado'}</h2>
           <div className="card p-6">
             <div className="grid md:grid-cols-2 gap-4">
               {shortcuts.map((shortcut, i) => (

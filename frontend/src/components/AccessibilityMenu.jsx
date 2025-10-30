@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAccessibility } from '../contexts/AccessibilityContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { Link } from 'react-router-dom'
+import { useI18n } from '../contexts/I18nContext.jsx'
 
 export default function AccessibilityMenu() {
   const {
@@ -31,6 +32,8 @@ export default function AccessibilityMenu() {
   } = useAccessibility()
 
   const { dark, setDark } = useTheme()
+
+  const { t } = useI18n()
 
   const [open, setOpen] = useState(false)
   const [announce, setAnnounce] = useState('')
@@ -114,17 +117,17 @@ export default function AccessibilityMenu() {
 
   return (
     <>
-      <motion.button
+  <motion.button
         ref={buttonRef}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 230, delay: 0.6 }}
         onClick={() => setOpen((v) => !v)}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary-600 hover:bg-primary-700 text-white shadow-lg hover:shadow-xl transition-all focus-visible flex items-center justify-center text-2xl"
-        aria-label="Abrir menú de accesibilidad"
+        aria-label={t('accessibility_menu')}
         aria-haspopup="dialog"
         aria-expanded={open}
-        title="Accesibilidad (Alt+A)"
+        title={`${t('accessibility_menu')} (Alt+A)`}
       >
         ♿
       </motion.button>
@@ -148,11 +151,11 @@ export default function AccessibilityMenu() {
             {/* Header */}
             <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-4">
               <div className="flex items-center justify-between">
-                <h3 id="access-menu-title" className="font-bold text-lg">♿ Accesibilidad</h3>
+                <h3 id="access-menu-title" className="font-bold text-lg">♿ {t('accessibility_menu')}</h3>
                 <button
                   onClick={() => setOpen(false)}
                   className="hover:bg-white/20 rounded-lg p-1 focus-visible"
-                  aria-label="Cerrar menú de accesibilidad"
+                  aria-label={t('aria_close') || 'Cerrar menú de accesibilidad'}
                 >
                   ✕
                 </button>
@@ -163,12 +166,12 @@ export default function AccessibilityMenu() {
             <div className="p-4 space-y-4 max-h-[600px] overflow-y-auto">
               {/* Modo claro/oscuro */}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">🌗 Modo oscuro</span>
+                <span className="text-sm font-medium">🌗 {t('accessibility_dark_mode')}</span>
                 <button
-                  onClick={() => { setDark(!dark); announceChange(`Modo ${!dark ? 'oscuro' : 'claro'} activado`) }}
+                  onClick={() => { setDark(!dark); announceChange(!dark ? t('announce_dark_on') || 'Modo oscuro activado' : t('announce_dark_off') || 'Modo claro activado') }}
                   className={`w-12 h-6 rounded-full transition-colors focus-visible ${dark ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
                   aria-pressed={dark}
-                  aria-label="Alternar modo oscuro"
+                  aria-label={t('aria_toggle_dark_mode')}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${dark ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
@@ -176,12 +179,12 @@ export default function AccessibilityMenu() {
 
               {/* Alto contraste */}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">🎨 Alto contraste</span>
+                <span className="text-sm font-medium">🎨 {t('accessibility_high_contrast')}</span>
                 <button
-                  onClick={() => { toggleHighContrast(); announceChange(`Alto contraste ${!highContrast ? 'activado' : 'desactivado'}`) }}
+                  onClick={() => { toggleHighContrast(); announceChange(!highContrast ? t('announce_high_contrast_activated') : t('announce_high_contrast_deactivated')) }}
                   className={`w-12 h-6 rounded-full transition-colors focus-visible ${highContrast ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
                   aria-pressed={highContrast}
-                  aria-label="Alternar alto contraste"
+                  aria-label={t('accessibility_high_contrast')}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${highContrast ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
@@ -189,10 +192,10 @@ export default function AccessibilityMenu() {
 
               {/* Tamaño de texto A- / A+ */}
               <div>
-                <label className="text-sm font-medium block mb-2">🔠 Tamaño de texto</label>
+                <label className="text-sm font-medium block mb-2">🔠 {t('accessibility_text_size')}</label>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => { decreaseFont(); announceChange('Tamaño de texto disminuido') }}
+                    onClick={() => { decreaseFont(); announceChange(t('accessibility_text_size') + ' - ' + (t('accessibility_active') || 'disminuido')) }}
                     className="px-3 py-2 rounded-lg border focus-visible"
                     disabled={fontScale <= bounds.min}
                     aria-label="Disminuir tamaño de texto"
@@ -203,7 +206,7 @@ export default function AccessibilityMenu() {
                     {fontScale}%
                   </div>
                   <button
-                    onClick={() => { increaseFont(); announceChange('Tamaño de texto aumentado') }}
+                    onClick={() => { increaseFont(); announceChange(t('accessibility_text_size') + ' - ' + (t('accessibility_active') || 'aumentado')) }}
                     className="px-3 py-2 rounded-lg border focus-visible"
                     disabled={fontScale >= bounds.max}
                     aria-label="Aumentar tamaño de texto"
@@ -216,12 +219,12 @@ export default function AccessibilityMenu() {
 
               {/* Modo lectura */}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">📖 Modo lectura</span>
+                <span className="text-sm font-medium">📖 {t('accessibility_reading_comfort')}</span>
                 <button
-                  onClick={() => { toggleReadingComfort(); announceChange(`Modo lectura ${!readingComfort ? 'activado' : 'desactivado'}`) }}
+                  onClick={() => { toggleReadingComfort(); announceChange(!readingComfort ? (t('accessibility_reading_comfort') + ' ' + (t('accessibility_active') || 'activado')) : (t('accessibility_reading_comfort') + ' ' + (t('accessibility_active') || 'desactivado'))) }}
                   className={`w-12 h-6 rounded-full transition-colors focus-visible ${readingComfort ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
                   aria-pressed={readingComfort}
-                  aria-label="Alternar modo lectura"
+                  aria-label={t('accessibility_reading_comfort')}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${readingComfort ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
@@ -229,12 +232,12 @@ export default function AccessibilityMenu() {
 
               {/* Pausar animaciones */}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">⏸️ Pausar animaciones</span>
+                <span className="text-sm font-medium">⏸️ {t('accessibility_pause_animations')}</span>
                 <button
-                  onClick={() => { togglePauseAnimations(); announceChange(`Animaciones ${!pauseAnimations ? 'pausadas' : 'activadas'}`) }}
+                  onClick={() => { togglePauseAnimations(); announceChange(!pauseAnimations ? (t('accessibility_pause_animations') + ' ' + (t('accessibility_active') || 'pausadas')) : (t('accessibility_pause_animations') + ' ' + (t('accessibility_active') || 'activadas'))) }}
                   className={`w-12 h-6 rounded-full transition-colors focus-visible ${pauseAnimations ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
                   aria-pressed={pauseAnimations}
-                  aria-label="Alternar pausa de animaciones"
+                  aria-label={t('accessibility_pause_animations')}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${pauseAnimations ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
@@ -294,35 +297,34 @@ export default function AccessibilityMenu() {
 
               {/* TTS */}
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">🔊 Texto a voz</span>
+                <span className="text-sm font-medium">🔊 {t('accessibility_tts')}</span>
                 <button
-                  onClick={() => { toggleTTS(); announceChange(`Lectura de texto ${!ttsEnabled ? 'activada' : 'desactivada'}`) }}
+                  onClick={() => { toggleTTS(); announceChange(!ttsEnabled ? (t('accessibility_tts') + ' ' + (t('accessibility_active') || 'activada')) : (t('accessibility_tts') + ' ' + (t('accessibility_active') || 'desactivada'))) }}
                   className={`w-12 h-6 rounded-full transition-colors focus-visible ${ttsEnabled ? 'bg-primary-600' : 'bg-neutral-300 dark:bg-neutral-600'}`}
                   aria-pressed={ttsEnabled}
-                  aria-label="Alternar texto a voz"
+                  aria-label={t('accessibility_tts')}
                 >
                   <div className={`w-5 h-5 rounded-full bg-white transition-transform ${ttsEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
               </div>
-              
+
               {/* Botones de prueba TTS - siempre visibles */}
               <div className="space-y-2 pt-2">
                 <button 
                   onClick={() => {
-                    const text = window.getSelection?.()?.toString?.()?.trim() || 
-                                 'Hola, soy el sistema de texto a voz de EduPredict. Esta es una prueba de lectura.'
+                    const text = window.getSelection?.()?.toString?.()?.trim() || t('accessibility_tts_test')
                     speak(text)
                   }} 
                   className="btn-secondary w-full text-sm py-2 flex items-center justify-center gap-2"
-                  title="Leer texto seleccionado o mensaje de prueba"
+                  title={t('accessibility_tts_play') || 'Leer texto seleccionado o mensaje de prueba'}
                 >
-                  🎤 Leer {ttsEnabled ? 'selección' : 'prueba'}
+                  🎤 {t('accessibility_tts_play') || 'Reproducir'}
                 </button>
                 <button 
-                  onClick={() => { stopSpeaking(); announceChange('Lectura detenida') }} 
+                  onClick={() => { stopSpeaking(); announceChange(t('accessibility_tts_stop') || 'Lectura detenida') }} 
                   className="btn-outline w-full text-sm py-2 flex items-center justify-center gap-2"
                 >
-                  ⏹️ Detener lectura
+                  ⏹️ {t('accessibility_tts_stop') || 'Detener'}
                 </button>
               </div>
 
@@ -331,15 +333,15 @@ export default function AccessibilityMenu() {
                 className="block w-full btn-primary text-center text-sm py-2 mt-2"
                 onClick={() => setOpen(false)}
               >
-                ℹ️ Más sobre accesibilidad
+                ℹ️ {t('accessibility_learn_more')}
               </Link>
 
               <div className="pt-2">
                 <button
-                  onClick={() => { resetAccessibility(); setDark(false); announceChange('Preferencias restablecidas') }}
+                  onClick={() => { resetAccessibility(); setDark(false); announceChange(t('accessibility_reset') || 'Preferencias restablecidas') }}
                   className="btn btn-outline w-full"
                 >
-                  🔄 Restablecer preferencias
+                  🔄 {t('accessibility_reset')}
                 </button>
               </div>
             </div>
