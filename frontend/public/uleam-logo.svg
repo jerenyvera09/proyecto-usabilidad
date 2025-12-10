@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" role="img" aria-labelledby="title desc">
+  <title id="title">Logo ULEAM</title>
+  <desc id="desc">Marca institucional ULEAM con silueta y tipografía roja</desc>
+  <defs>
+    <linearGradient id="halo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4b5563" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#111827" stop-opacity="0.45" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="120" rx="18" fill="url(#halo)" opacity="0.18" />
+  <g transform="translate(12 10)">
+    <circle cx="46" cy="46" r="44" fill="#f9fafb" fill-opacity="0.04" stroke="#4b5563" stroke-width="6" />
+    <path
+      d="M27 57c6.5-8.5 18.8-8.7 28-.5 3.9 4.6 3.9 10 3.9 13.7v2.3c0 1-2 .8-2 .8-16 0-26-2.3-32.9-6.3-.8-.5-.3-6.8 3-10z"
+      fill="#4b5563"
+      opacity="0.9"
+    />
+    <path
+      d="M46 21c-8.7 0-15.8 7.1-15.8 15.8 0 8.8 6.8 15.3 15.8 15.3 9.4 0 15.5-7.2 15.5-15.8C61.5 27.5 54.8 21 46 21z"
+      fill="#4b5563"
+    />
+    <path
+      d="M48 26.5c1.8 1 3.2 3 3.2 5.3 0 3.3-2.6 5.9-5.9 5.9-2.3 0-4.3-1.3-5.3-3.2"
+      fill="none"
+      stroke="#111827"
+      stroke-width="3"
+      stroke-linecap="round"
+    />
+  </g>
+  <text x="112" y="74" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="56" font-weight="700" fill="#b80f1f" letter-spacing="1">
+    Uleam
+  </text>
+</svg>

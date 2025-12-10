@@ -46,7 +46,7 @@ export default function TooltipHelp({ label = 'Ayuda', children }) {
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            className="absolute z-50 mt-2 w-64 p-3 rounded-lg shadow-lg bg-white border text-sm text-neutral-700"
+            className="absolute z-50 mt-2 w-64 p-3 rounded-lg shadow-soft bg-gradient-to-br from-bg800/95 via-bg900 to-bg800/90 border border-white/10 text-sm text-textPrimary backdrop-blur"
           >
             {children}
           </motion.div>

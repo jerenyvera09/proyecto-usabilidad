@@ -4,8 +4,8 @@ import AccessibilityMenu from './AccessibilityMenu'
 
 export default function Layout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col bg-bg900 text-textPrimary transition-colors">
-      <a 
+    <div className="app-shell">
+      <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-uleamRed text-white px-3 py-2 rounded z-50 shadow-glow"
       >

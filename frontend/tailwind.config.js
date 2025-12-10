@@ -8,15 +8,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        uleamRed: '#C8102E',
-        uleamRedDark: '#8E001A',
-        accentBlue: '#4F8BFF',
-        accentPurple: '#A070FF',
-        bg900: '#050D24',
-        bg800: '#0B162F',
-        textPrimary: '#F2F4F7',
-        textMuted: '#C8CCD4',
-        surface: '#0F1C3A',
+        uleamRed: '#1C7CEB',
+        uleamRedDark: '#09223B',
+        accentBlue: '#59A66B',
+        accentPurple: '#2BA3E7',
+        bg900: '#04101F',
+        bg800: '#09223B',
+        textPrimary: '#F5F7FA',
+        textMuted: '#DCE1E8',
+        surface: '#0B1A30',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system'],
