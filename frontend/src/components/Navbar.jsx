@@ -40,20 +40,20 @@ export default function Navbar(){
         <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-transparent to-white/0 pointer-events-none" aria-hidden />
         <div className="relative max-w-7xl mx-auto flex items-center justify-between px-6 py-3 gap-4">
           <Link to="/" className="flex items-center gap-3 logo-link focus-visible" title="EduPredict - ULEAM" aria-label="Ir al inicio">
-            <div className="h-11 w-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shadow-soft overflow-hidden">
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-uleamRed/20 to-accentBlue/10 border border-white/20 flex items-center justify-center shadow-soft overflow-hidden backdrop-blur-sm">
               <img
                 src="/uleam-logo.svg"
                 alt="ULEAM"
-                className="h-8 w-auto object-contain"
+                className="h-9 w-auto object-contain"
                 width="48"
                 height="48"
                 loading="lazy"
               />
             </div>
-            <div className="flex flex-col leading-tight space-y-1 min-w-[150px]">
-              <span className="font-extrabold text-lg tracking-tight text-textPrimary drop-shadow-neon">EduPredict</span>
-              <span className="text-[11px] text-textMuted px-3 py-1 rounded-xl bg-white/10 border border-white/10 w-fit shadow-soft">
-                ULEAM · Inteligencia académica
+            <div className="flex flex-col leading-tight space-y-0.5 min-w-[160px]">
+              <span className="font-extrabold text-lg tracking-tight text-textPrimary drop-shadow-neon bg-gradient-to-r from-uleamRed via-accentPurple to-accentBlue bg-clip-text text-transparent">EduPredict</span>
+              <span className="text-[10px] text-textMuted px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-bg800/80 to-bg900/60 border border-white/10 w-fit shadow-soft backdrop-blur-sm">
+                ULEAM · IA Académica
               </span>
             </div>
           </Link>

@@ -174,11 +174,11 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-white/0 pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-b from-bg800/10 via-transparent to-bg900/0 pointer-events-none" aria-hidden />
       <div className="absolute -top-10 -right-6 h-64 w-64 bg-uleamRed/10 blur-3xl rounded-full pointer-events-none" aria-hidden />
 
-      <Section className="relative overflow-hidden bg-gradient-to-br from-white/10 via-white/5 to-white/0">
-        <div className="absolute inset-0 bg-gradient-to-r from-uleamRed/20 via-bg800/40 to-uleamRedDark/10 blur-3xl" aria-hidden />
+      <Section className="relative overflow-hidden bg-gradient-to-br from-bg800/50 via-bg900/40 to-bg800/30">
+        <div className="absolute inset-0 bg-gradient-to-r from-uleamRed/15 via-bg800/30 to-uleamRedDark/10 blur-3xl" aria-hidden />
         <div className="relative space-y-2">
           <p className="text-sm uppercase tracking-[0.2em] text-textMuted">Panel de control</p>
           <h1 className="text-3xl md:text-4xl font-extrabold gradient-text">Tech Dashboard 2025</h1>
@@ -203,7 +203,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-7">
-          <GlassPanel neon className="p-6 space-y-6 bg-gradient-to-br from-white/10 via-white/5 to-white/0">
+          <GlassPanel neon className="p-6 space-y-6 bg-gradient-to-br from-bg800/40 via-bg900/30 to-bg800/20">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm text-textMuted uppercase tracking-wide">Prediccion rapida</p>
@@ -295,7 +295,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-12 gap-6 items-stretch">
         <div className="col-span-12 lg:col-span-6">
-          <GlassPanel neon className="p-4 md:p-6 h-[320px] bg-gradient-to-br from-white/10 via-white/5 to-white/0">
+          <GlassPanel neon className="p-4 md:p-6 h-[320px] bg-gradient-to-br from-bg800/40 via-bg900/30 to-bg800/20">
             {loadingStats ? (
               <div className="skeleton h-full w-full" />
             ) : (
@@ -304,7 +304,7 @@ export default function Dashboard() {
           </GlassPanel>
         </div>
         <div className="col-span-12 lg:col-span-6">
-          <GlassPanel neon className="p-4 md:p-6 h-[320px] bg-gradient-to-br from-white/10 via-white/5 to-white/0">
+          <GlassPanel neon className="p-4 md:p-6 h-[320px] bg-gradient-to-br from-bg800/40 via-bg900/30 to-bg800/20">
             {loadingStats ? (
               <div className="skeleton h-full w-full" />
             ) : (
