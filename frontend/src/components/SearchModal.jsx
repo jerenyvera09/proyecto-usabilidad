@@ -63,28 +63,28 @@ export default function SearchModal({ open, onClose }){
 
   return (
     <div className="fixed inset-0 z-[70] flex items-start sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Buscador">
-      <button className="absolute inset-0 bg-black/40" aria-hidden onClick={() => onClose?.()} />
-      <div className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b dark:border-gray-700">
-          <FaSearch aria-hidden />
+      <button className="absolute inset-0 bg-black/60 backdrop-blur-sm" aria-hidden onClick={() => onClose?.()} />
+      <div className="relative w-full max-w-lg rounded-2xl bg-gradient-to-br from-bg800/95 via-bg900 to-bg800/90 border border-white/10 shadow-soft overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 text-textPrimary">
+          <FaSearch aria-hidden className="text-uleamRed" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e)=> setQuery(e.target.value)}
-            className="flex-1 bg-transparent outline-none"
+            className="flex-1 bg-transparent outline-none placeholder:text-textMuted"
             placeholder={`${t('search') || 'Buscar'}… (Ctrl+K)`}
             aria-label={t('search') || 'Buscar'}
           />
         </div>
-        <ul ref={listRef} className="max-h-80 overflow-y-auto py-2">
+        <ul ref={listRef} className="max-h-80 overflow-y-auto py-2 text-textPrimary">
           {filtered.length === 0 && (
-            <li className="px-4 py-3 text-sm text-gray-500">{t('no_results') || 'Sin resultados'}</li>
+            <li className="px-4 py-3 text-sm text-textMuted">{t('no_results') || 'Sin resultados'}</li>
           )}
           {filtered.map((item, idx) => (
             <li key={item.to}>
               <button
                 onClick={() => { navigate(item.to); onClose?.() }}
-                className={`w-full text-left px-4 py-2 ${idx===active ? 'bg-gray-100 dark:bg-gray-700' : ''}`}
+                className={`w-full text-left px-4 py-2 rounded-lg transition ${idx===active ? 'bg-white/10' : 'hover:bg-white/5'}`}
                 aria-current={idx===active}
               >
                 {item.label}

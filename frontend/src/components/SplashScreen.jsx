@@ -9,7 +9,7 @@ export default function SplashScreen() {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-uleamRed via-bg900 to-uleamRedDark"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-bg900 via-uleamRedDark to-uleamRed"
     >
       <div className="text-center space-y-6">
         {/* Logo animado */}
@@ -22,7 +22,7 @@ export default function SplashScreen() {
             stiffness: 200,
             delay: 0.1
           }}
-          className="w-24 h-24 mx-auto rounded-full bg-white flex items-center justify-center shadow-2xl"
+          className="w-24 h-24 mx-auto rounded-full bg-white/10 border border-white/15 backdrop-blur-xl flex items-center justify-center shadow-2xl"
         >
           <span className="text-5xl font-bold gradient-text">E</span>
         </motion.div>

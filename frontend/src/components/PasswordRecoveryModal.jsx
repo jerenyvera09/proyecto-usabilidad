@@ -28,17 +28,17 @@ export default function PasswordRecoveryModal({ open, onClose }){
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
-      <button aria-hidden className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <button aria-hidden className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <AnimatePresence>
         <motion.div
           ref={dialogRef}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-md rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xl"
+          className="relative w-full max-w-md rounded-2xl bg-gradient-to-br from-bg800/95 via-bg900 to-bg800/90 border border-white/10 shadow-soft text-textPrimary"
           role="document"
         >
-          <div className="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+          <div className="px-6 py-4 border-b border-white/10">
             <h2 id="recovery-title" className="text-xl font-bold">Recuperar contraseña</h2>
           </div>
           <div className="px-6 py-5">
@@ -56,7 +56,7 @@ export default function PasswordRecoveryModal({ open, onClose }){
                     value={email}
                     onChange={(e)=> setEmail(e.target.value)}
                   />
-                  <p className="text-xs text-neutral-600 mt-1" aria-live="polite">Usa tu correo @uleam.edu.ec</p>
+                  <p className="text-xs text-textMuted mt-1" aria-live="polite">Usa tu correo @uleam.edu.ec</p>
                 </div>
                 <div className="flex justify-end gap-2">
                   <button type="button" ref={closeRef} onClick={onClose} className="btn btn-outline">Cancelar</button>
@@ -64,7 +64,7 @@ export default function PasswordRecoveryModal({ open, onClose }){
                 </div>
               </form>
             ) : (
-              <div role="status" aria-live="polite" className="text-green-700 dark:text-green-400">
+              <div role="status" aria-live="polite" className="text-accentBlue">
                 ✅ Correo de recuperación enviado
               </div>
             )}

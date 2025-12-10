@@ -51,7 +51,7 @@ export default function AccessibilityButton() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 400 }}
             transition={{ type: 'spring', damping: 25 }}
-            className="fixed bottom-24 right-6 z-50 w-80 bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 overflow-hidden"
+            className="fixed bottom-24 right-6 z-50 w-80 bg-gradient-to-br from-bg800/95 via-bg900 to-bg800/90 rounded-2xl shadow-soft border border-white/10 overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-4">
