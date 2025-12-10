@@ -1,5 +1,5 @@
 /* Estilos globales - EduPredict */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,102 +7,133 @@
 
 @layer base {
   * {
-    @apply border-neutral-200 dark:border-neutral-700;
+    @apply border-white/10;
   }
-  
+
   body {
-    @apply bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50;
-    @apply font-sans antialiased;
+    @apply bg-bg900 text-textPrimary font-sans antialiased min-h-screen;
     @apply transition-colors duration-300;
+    background-color: #050d24;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(200, 16, 46, 0.12), transparent 30%),
+      radial-gradient(circle at 80% 0%, rgba(79, 139, 255, 0.12), transparent 30%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold;
+    @apply font-bold text-textPrimary;
   }
-  
-  /* Scrollbar personalizado */
+
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Scrollbar */
   ::-webkit-scrollbar {
     width: 10px;
   }
-  
+
   ::-webkit-scrollbar-track {
-    @apply bg-neutral-100 dark:bg-neutral-800;
+    background: #0f172a;
   }
-  
+
   ::-webkit-scrollbar-thumb {
-    @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
+    background: #1f2937;
+    border-radius: 999px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-neutral-400 dark:bg-neutral-500;
+    background: #2d3748;
   }
 }
 
 @layer components {
   /* Botones */
   .btn {
-    @apply px-6 py-3 rounded-full font-semibold transition-all duration-300;
-    @apply focus:outline-none focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-700;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold;
+    @apply transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accentBlue focus-visible:ring-offset-bg900;
+    min-height: 44px;
   }
-  
+
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-500 text-white;
-    @apply hover:from-primary-700 hover:to-primary-600;
-    @apply shadow-lg hover:shadow-xl hover:-translate-y-0.5;
+    @apply bg-gradient-to-r from-uleamRed to-accentPurple text-textPrimary;
+    @apply shadow-[0_15px_45px_rgba(200,16,46,0.35)] hover:shadow-[0_18px_55px_rgba(79,139,255,0.35)] hover:-translate-y-0.5;
   }
-  
+
   .btn-secondary {
-    @apply bg-neutral-200 text-neutral-900 dark:bg-neutral-700 dark:text-neutral-100;
-    @apply hover:bg-neutral-300 dark:hover:bg-neutral-600;
+    @apply bg-white/10 text-textPrimary border border-white/15 hover:bg-white/15;
   }
-  
+
   .btn-outline {
-    @apply border-2 border-primary-500 text-primary-600 dark:text-primary-400;
-    @apply hover:bg-primary-50 dark:hover:bg-primary-900/20;
+    @apply border border-uleamRed/70 text-textPrimary hover:border-accentBlue hover:text-textPrimary hover:bg-white/5;
   }
-  
+
   /* Inputs */
   .input {
-    @apply w-full px-4 py-3 rounded-lg border-2;
-    @apply bg-white dark:bg-neutral-800;
-    @apply border-neutral-300 dark:border-neutral-600;
-    @apply focus:border-primary-500 dark:focus:border-primary-400;
-    @apply focus:ring-4 focus:ring-primary-100 dark:focus:ring-primary-900/30;
-    @apply transition-all duration-200;
-    @apply text-base;
+    @apply w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-textPrimary;
+    @apply placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-accentBlue focus:border-transparent;
+    @apply transition-all duration-200 shadow-[0_10px_30px_rgba(0,0,0,0.35)];
   }
-  
+
   .input-error {
-    @apply border-red-500 dark:border-red-400;
-    @apply focus:border-red-500 dark:focus:border-red-400;
-    @apply focus:ring-red-100 dark:focus:ring-red-900/30;
+    @apply border-red-500/70 focus:ring-red-400;
   }
-  
+
   .label {
-    @apply block text-sm font-semibold mb-2;
-    @apply text-neutral-700 dark:text-neutral-300;
+    @apply block text-sm font-semibold mb-2 text-textMuted;
   }
-  
+
   /* Cards */
   .card {
-    @apply bg-white dark:bg-neutral-800 rounded-2xl shadow-lg;
-    @apply border border-neutral-200 dark:border-neutral-700;
-    @apply transition-all duration-300;
+    @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-[24px] text-textPrimary;
+    @apply shadow-[0_24px_70px_rgba(0,0,0,0.45)] transition-all duration-300;
   }
-  
+
   .card-hover {
-    @apply hover:shadow-2xl hover:-translate-y-1;
+    @apply hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(79,139,255,0.32)];
   }
-  
+
+  .card-glass {
+    @apply rounded-2xl border border-white/15 bg-white/8 backdrop-blur-[28px] text-textPrimary;
+    @apply shadow-[0_20px_60px_rgba(0,0,0,0.4)];
+  }
+
+  .neon-border {
+    @apply relative overflow-hidden;
+  }
+
+  .neon-border::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(120deg, rgba(200, 16, 46, 0.32), rgba(79, 139, 255, 0.28), rgba(160, 112, 255, 0.28));
+    opacity: 0.9;
+    pointer-events: none;
+    filter: drop-shadow(0 0 24px rgba(79, 139, 255, 0.22));
+  }
+
+  .section {
+    @apply rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/0 p-6 sm:p-8 space-y-6;
+    @apply shadow-[0_22px_70px_rgba(0,0,0,0.5)];
+  }
+
   /* Container */
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-6;
   }
-  
-  /* Foco visible para accesibilidad */
+
+  /* Foco visible */
   .focus-visible {
-    @apply focus:outline-none focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-700;
-    @apply focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-neutral-900;
+    @apply focus:outline-none focus:ring-2 focus:ring-accentBlue focus:ring-offset-2 focus:ring-offset-bg900;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-white/10 rounded-xl;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
   }
 }
 
@@ -111,7 +142,7 @@
   .animate-fade-in-up {
     animation: fadeInUp 0.6s ease-out;
   }
-  
+
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -122,41 +153,61 @@
       transform: translateY(0);
     }
   }
-  
+
   /* Gradientes */
   .gradient-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-500;
+    @apply bg-gradient-to-r from-uleamRed via-accentPurple to-accentBlue;
   }
-  
+
   .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-uleamRed via-accentPurple to-accentBlue bg-clip-text text-transparent;
   }
-  
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  .font-friendly {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.01em;
+  }
+
   /* Modo alto contraste */
   .high-contrast {
     @apply contrast-125 saturate-150;
   }
-  
-  /* Espaciado mejorado para lectura */
+
+  /* Espaciado para lectura */
   .reading-comfort p,
   .reading-comfort li {
     @apply leading-relaxed tracking-wide;
     letter-spacing: 0.025em;
     line-height: 1.8;
   }
-  
-  /* Tamaño de texto ampliado */
-  .text-large {
+
+  /* Texto ampliado */
+  .text-large,
+  .text-size-large {
     font-size: 1.125em !important;
   }
-  
-  .text-large h1 { font-size: 1.25em !important; }
-  .text-large h2 { font-size: 1.2em !important; }
-  .text-large h3 { font-size: 1.15em !important; }
-  .text-large p, 
-  .text-large li, 
-  .text-large span { font-size: 1.125em !important; }
-  
+
+  .text-large h1,
+  .text-size-large h1 { font-size: 1.25em !important; }
+  .text-large h2,
+  .text-size-large h2 { font-size: 1.2em !important; }
+  .text-large h3,
+  .text-size-large h3 { font-size: 1.15em !important; }
+  .text-large p,
+  .text-size-large p,
+  .text-large li,
+  .text-size-large li,
+  .text-large span,
+  .text-size-large span { font-size: 1.125em !important; }
+
   /* Desactivar animaciones */
   .no-animations * {
     animation: none !important;
@@ -164,7 +215,7 @@
   }
 }
 
-/* Modo reducido de movimiento (accesibilidad) */
+/* Movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -178,8 +229,7 @@
 /* Splash Screen */
 .splash-screen {
   @apply fixed inset-0 z-50 flex items-center justify-center;
-  @apply bg-gradient-to-br from-primary-50 to-primary-100;
-  @apply dark:from-neutral-900 dark:to-neutral-800;
+  @apply bg-gradient-to-br from-uleamRed/20 via-bg900 to-accentPurple/25;
 }
 
 .splash-logo {
@@ -192,12 +242,12 @@
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.85;
     transform: scale(1.05);
   }
 }
 
-/* Tooltips accesibles */
+/* Tooltips */
 [data-tooltip] {
   @apply relative;
 }
@@ -205,7 +255,7 @@
 [data-tooltip]::after {
   @apply content-[attr(data-tooltip)] absolute bottom-full left-1/2 -translate-x-1/2 mb-2;
   @apply px-3 py-1 rounded-lg text-xs font-medium;
-  @apply bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900;
+  @apply bg-bg800 text-white border border-white/10;
   @apply opacity-0 pointer-events-none transition-opacity duration-200;
   white-space: nowrap;
 }
@@ -215,11 +265,7 @@
   @apply opacity-100;
 }
 
-/* ============================================
-   ESTILOS DE ACCESIBILIDAD MEJORADOS (WCAG 2.1 AA)
-   ============================================ */
-
-/* Foco visible mejorado - Resalta enlaces y elementos interactivos */
+/* Accesibilidad */
 .focus-visible-enhanced a:focus,
 .focus-visible-enhanced button:focus,
 .focus-visible-enhanced input:focus,
@@ -227,21 +273,19 @@
 .focus-visible-enhanced textarea:focus,
 .focus-visible-enhanced [tabindex]:focus {
   @apply outline-none;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.6), 
-              0 0 0 8px rgba(59, 130, 246, 0.3) !important;
-  border: 3px solid #3b82f6 !important;
-  border-radius: 6px;
-  background-color: rgba(59, 130, 246, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.45),
+              0 0 0 6px rgba(124, 58, 237, 0.35) !important;
+  border: 2px solid #06b6d4 !important;
+  border-radius: 10px;
+  background-color: rgba(6, 182, 212, 0.06) !important;
   transition: all 0.2s ease-in-out;
 }
 
 .focus-visible-enhanced a:focus {
   text-decoration: underline !important;
-  text-decoration-thickness: 3px !important;
   text-underline-offset: 4px !important;
 }
 
-/* Navegación por teclado mejorada */
 .keyboard-navigation-enhanced {
   scroll-behavior: smooth;
 }
@@ -268,28 +312,20 @@
 .keyboard-navigation-enhanced a:focus::before,
 .keyboard-navigation-enhanced button:focus::before,
 .keyboard-navigation-enhanced [role="button"]:focus::before {
-  border-color: #3b82f6;
-  background-color: rgba(59, 130, 246, 0.05);
+  border-color: #06b6d4;
+  background-color: rgba(6, 182, 212, 0.06);
 }
 
-/* Indicador visual de navegación con Tab */
 .keyboard-navigation-enhanced *:focus {
   animation: focusPulse 0.6s ease-in-out;
 }
 
 @keyframes focusPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.03);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
 }
 
-/* Bloqueo de auto-scroll */
 .block-auto-scroll {
   scroll-behavior: auto !important;
 }
@@ -298,7 +334,6 @@
   scroll-behavior: auto !important;
 }
 
-/* Bloqueo de auto-audio */
 .block-auto-audio audio,
 .block-auto-audio video {
   pointer-events: none;
@@ -307,7 +342,7 @@
 
 .block-auto-audio audio::before,
 .block-auto-audio video::before {
-  content: '🔇 Audio/Video bloqueado';
+  content: 'Audio/Video bloqueado';
   position: absolute;
   top: 50%;
   left: 50%;
@@ -320,7 +355,6 @@
   z-index: 10;
 }
 
-/* Mejoras adicionales para alto contraste */
 .high-contrast a {
   text-decoration: underline !important;
   text-decoration-thickness: 2px !important;
@@ -332,7 +366,6 @@
   font-weight: 700 !important;
 }
 
-/* Indicadores de estado para elementos interactivos */
 .focus-visible-enhanced [aria-pressed="true"],
 .focus-visible-enhanced [aria-checked="true"],
 .focus-visible-enhanced [aria-selected="true"] {
@@ -343,8 +376,7 @@
   @apply ring-4 ring-red-400 ring-offset-2;
 }
 
-/* Skip link mejorado */
 .skip-link:focus {
-  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.8) !important;
+  box-shadow: 0 0 0 6px rgba(6, 182, 212, 0.8) !important;
   transform: translateY(0) scale(1.05) !important;
 }

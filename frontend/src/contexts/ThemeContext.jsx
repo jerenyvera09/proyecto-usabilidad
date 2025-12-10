@@ -42,7 +42,7 @@ const safeSetStorage = (key, value) => {
 }
 
 export function ThemeProvider({ children }){
-  const [dark, setDark] = useState(() => safeGetStorage('dark') === '1')
+  const [dark, setDark] = useState(() => safeGetStorage('dark', '1') === '1')
   const [highContrast, setHighContrast] = useState(() => safeGetStorage('highContrast') === '1')
   const [friendlyFont, setFriendlyFont] = useState(() => safeGetStorage('friendlyFont') === '1')
   const [readingComfort, setReadingComfort] = useState(() => safeGetStorage('readingComfort') === '1')

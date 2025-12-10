@@ -5,6 +5,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
+
 export default function Historial() {
   const { t } = useI18n()
   const { isAuthenticated } = useAuth()
@@ -33,10 +35,14 @@ export default function Historial() {
 
   const getRiesgoColor = (riesgo) => {
     switch (riesgo?.toLowerCase()) {
-      case 'bajo': return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/20'
-      case 'medio': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/20'
-      case 'alto': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/20'
-      default: return 'text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800'
+      case 'bajo':
+        return 'bg-accentBlue/15 text-accentBlue'
+      case 'medio':
+        return 'bg-accentPurple/15 text-accentPurple'
+      case 'alto':
+        return 'bg-uleamRed/20 text-uleamRed'
+      default:
+        return 'bg-white/10 text-textPrimary'
     }
   }
 
@@ -45,43 +51,34 @@ export default function Historial() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-12">
+    <div className="min-h-screen py-12">
       <div className="container-custom">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-4xl font-bold gradient-text mb-2">
-            📜 {t('nav_history') || 'Historial de Predicciones'}
+            {t('nav_history') || 'Historial de Predicciones'}
           </h1>
-          <p className="text-neutral-600 dark:text-neutral-400">
+          <p className="text-textMuted">
             {t('history_subtitle') || 'Revisa tus predicciones anteriores y tu progreso'}
           </p>
         </motion.div>
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent" />
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-uleamRed border-t-transparent" />
           </div>
         ) : predicciones.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="card p-12 text-center"
+            className="card-glass p-12 text-center space-y-3"
           >
-            <div className="text-6xl mb-4">📭</div>
-            <h3 className="text-2xl font-bold mb-2">
-              {t('history_empty') || 'No hay predicciones todavía'}
-            </h3>
-            <p className="text-neutral-600 dark:text-neutral-400 mb-6">
-              {t('history_empty_desc') || 'Realiza tu primera predicción para comenzar'}
+            <div className="text-6xl mb-4">i</div>
+            <h3 className="text-2xl font-bold mb-2">{t('history_empty') || 'No hay predicciones todavia'}</h3>
+            <p className="text-textMuted mb-6">
+              {t('history_empty_desc') || 'Realiza tu primera prediccion para comenzar'}
             </p>
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="btn btn-primary"
-            >
-              🎯 {t('predict_button') || 'Hacer Predicción'}
+            <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
+              {t('predict_button') || 'Hacer Prediccion'}
             </button>
           </motion.div>
         ) : (
@@ -92,7 +89,7 @@ export default function Historial() {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="card p-6 hover:shadow-lg transition-shadow"
+                className="card-glass p-6 hover:shadow-soft transition-shadow"
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="flex-1">
@@ -100,46 +97,59 @@ export default function Historial() {
                       <span className={`px-4 py-2 rounded-full font-bold uppercase text-sm ${getRiesgoColor(pred.riesgo)}`}>
                         {pred.riesgo}
                       </span>
-                      <span className="text-2xl font-bold text-neutral-700 dark:text-neutral-300">
+                      <span className="text-2xl font-bold text-textPrimary">
                         {pred.score}/100
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <p className="text-neutral-500 dark:text-neutral-400 mb-1">📊 Promedio</p>
-                        <p className="font-semibold">{pred.nota_promedio}</p>
+                        <p className="text-textMuted mb-1">Promedio</p>
+                        <p className="font-semibold">{pred.promedio}</p>
                       </div>
                       <div>
-                        <p className="text-neutral-500 dark:text-neutral-400 mb-1">✅ Asistencia</p>
+                        <p className="text-textMuted mb-1">Asistencia</p>
                         <p className="font-semibold">{pred.asistencia}%</p>
                       </div>
                       <div>
-                        <p className="text-neutral-500 dark:text-neutral-400 mb-1">📚 Hrs. Estudio</p>
+                        <p className="text-textMuted mb-1">Hrs. Estudio</p>
                         <p className="font-semibold">{pred.horas_estudio}h</p>
                       </div>
                     </div>
 
-                    <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
+                    <div className="text-xs text-textMuted mt-1">
+                      Tendencia: {pred.tendencia} | Puntualidad: {pred.puntualidad}% | Habitos: {pred.habitos}
+                    </div>
+
+                    <div className="mt-3 pt-3 border-t border-white/10">
                       <p className="text-sm">
-                        <span className="font-medium">💡 Recomendación:</span> {pred.recomendacion}
+                        <span className="font-medium">Recomendacion:</span> {pred.recomendacion}
                       </p>
                     </div>
                   </div>
 
-                  <div className="text-sm text-neutral-500 dark:text-neutral-400 md:text-right">
-                    <p className="font-medium mb-1">📅 Fecha</p>
-                    <p>{new Date(pred.created_at).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}</p>
-                    <p className="text-xs mt-1">
-                      {new Date(pred.created_at).toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
+                  <div className="text-sm text-textMuted md:text-right space-y-2">
+                    <div>
+                      <p className="font-medium mb-1">Fecha</p>
+                      <p>
+                        {new Date(pred.created_at).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                      <p className="text-xs mt-1">
+                        {new Date(pred.created_at).toLocaleTimeString('es-ES', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                    {pred.pdf_url && (
+                      <a className="btn btn-outline" href={`${API_BASE}${pred.pdf_url}`}>
+                        Descargar PDF
+                      </a>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -148,17 +158,9 @@ export default function Historial() {
         )}
 
         {predicciones.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 text-center"
-          >
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="btn btn-primary"
-            >
-              ➕ {t('predict_new') || 'Nueva Predicción'}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8 text-center">
+            <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
+              {t('predict_new') || 'Nueva Prediccion'}
             </button>
           </motion.div>
         )}

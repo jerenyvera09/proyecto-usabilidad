@@ -1,209 +1,81 @@
 import { motion } from 'framer-motion'
 import { useI18n } from '../contexts/I18nContext'
+import { Link } from 'react-router-dom'
+import { Section, GlassPanel, Button } from '../components/ui/Primitives'
 
 export default function About() {
   const { t } = useI18n()
 
-  const team = [
-    {
-      name: 'ULEAM',
-      role: 'Universidad Laica Eloy Alfaro de Manabí',
-      desc: 'Institución de educación superior comprometida con la excelencia académica'
-    }
-  ]
-
   const values = [
     {
       icon: '🎯',
-      title: 'Misión',
-      desc: 'Proporcionar herramientas tecnológicas que mejoren el rendimiento académico de los estudiantes universitarios mediante predicciones basadas en datos'
+      title: 'Mision',
+      desc: 'Proporcionar herramientas tecnologicas que mejoren el rendimiento academico de los estudiantes universitarios mediante predicciones basadas en datos.',
     },
     {
-      icon: '👁️',
-      title: 'Visión',
-      desc: 'Ser la plataforma líder en análisis predictivo educativo, ayudando a instituciones y estudiantes a tomar decisiones informadas'
+      icon: '🚀',
+      title: 'Vision',
+      desc: 'Ser la plataforma lider en analisis predictivo educativo, ayudando a instituciones y estudiantes a tomar decisiones informadas.',
     },
     {
-      icon: '💎',
+      icon: '🤝',
       title: 'Valores',
-      desc: 'Innovación, accesibilidad, privacidad, excelencia académica y compromiso con la educación inclusiva'
-    }
+      desc: 'Innovacion, accesibilidad, privacidad, excelencia academica y compromiso con la educacion inclusiva.',
+    },
   ]
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
-        <div className="container-custom text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              {t('nav_about') || 'Acerca de EduPredict'}
-            </h1>
-            <p className="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">
-              {t('about_subtitle') || 'Sistema inteligente de predicción de rendimiento académico desarrollado para ULEAM'}
-            </p>
-          </motion.div>
+    <div className="space-y-14">
+      <section className="relative overflow-hidden bg-gradient-to-br from-uleamRed via-grayDark to-uleamRedDark text-white py-16 md:py-24 rounded-3xl mx-4 md:mx-0 shadow-soft border border-white/10">
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 opacity-70" aria-hidden />
+        <div className="container-custom text-center relative z-10 space-y-4">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-4xl md:text-5xl font-extrabold drop-shadow-neon">
+            {t('nav_about') || 'Acerca de EduPredict'}
+          </motion.h1>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.6 }} className="text-lg md:text-2xl text-white/90 max-w-3xl mx-auto">
+            {t('about_subtitle') || 'Sistema inteligente de prediccion de rendimiento academico desarrollado para ULEAM'}
+          </motion.p>
         </div>
       </section>
 
-      {/* ¿Qué es EduPredict? */}
-      <section className="py-20 container-custom">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto"
-        >
-          <h2 className="text-4xl font-bold gradient-text mb-6 text-center">
-            ❓ ¿Qué es EduPredict?
-          </h2>
-          <div className="card p-8 text-lg leading-relaxed space-y-4 text-neutral-700 dark:text-neutral-300">
-            <p>
-              <strong>EduPredict</strong> es una plataforma web desarrollada para la Universidad Laica Eloy Alfaro de Manabí (ULEAM) 
-              que utiliza algoritmos de predicción para analizar el rendimiento académico de los estudiantes.
+      <div className="container-custom space-y-12">
+        <Section className="space-y-6">
+          <h2 className="text-3xl font-bold gradient-text text-center">{t('about_title') || '¿Que es EduPredict?'}</h2>
+          <GlassPanel neon className="p-8 space-y-4">
+            <p className="text-lg text-textPrimary">
+              {t('about_description') || 'EduPredict es una plataforma de analisis predictivo que utiliza datos academicos para estimar el rendimiento de los estudiantes y ofrecer recomendaciones personalizadas.'}
             </p>
-            <p>
-              Mediante la evaluación de tres factores clave (nota promedio, asistencia y horas de estudio), 
-              el sistema calcula un score de riesgo académico y proporciona recomendaciones personalizadas 
-              para mejorar el desempeño estudiantil.
+            <p className="text-textMuted">
+              {t('about_detail') || 'Este proyecto institucional se enfoca en la mejora continua y el acompanamiento oportuno, ofreciendo paneles visuales, reportes y alertas tempranas para docentes y autoridades.'}
             </p>
-            <p>
-              El proyecto fue diseñado siguiendo los estándares de <strong>usabilidad y accesibilidad WCAG 2.2 Level AA</strong>, 
-              garantizando una experiencia inclusiva para todos los usuarios.
-            </p>
-          </div>
-        </motion.div>
-      </section>
+          </GlassPanel>
+        </Section>
 
-      {/* Misión, Visión y Valores */}
-      <section className="py-20 bg-white dark:bg-neutral-800">
-        <div className="container-custom">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold text-center gradient-text mb-12"
-          >
-            🌟 Nuestros Principios
-          </motion.h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {values.map((value, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                className="card p-8 text-center"
-              >
-                <div className="text-6xl mb-4">{value.icon}</div>
-                <h3 className="text-2xl font-bold mb-4">{value.title}</h3>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  {value.desc}
-                </p>
+        <Section className="space-y-8">
+          <h2 className="text-3xl font-bold gradient-text text-center">{t('about_values') || 'Pilares institucionales'}</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {values.map((item, idx) => (
+              <motion.div key={item.title} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.05 }}>
+                <GlassPanel className="p-6 h-full">
+                  <div className="text-4xl mb-3" aria-hidden>{item.icon}</div>
+                  <h3 className="text-xl font-bold text-textPrimary mb-2">{item.title}</h3>
+                  <p className="text-textMuted text-sm leading-relaxed">{item.desc}</p>
+                </GlassPanel>
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* Tecnologías */}
-      <section className="py-20 container-custom">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto"
-        >
-          <h2 className="text-4xl font-bold gradient-text mb-8 text-center">
-            🛠️ Tecnologías Utilizadas
-          </h2>
-          <div className="card p-8">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-bold mb-3 text-primary-600 dark:text-primary-400">
-                  🎨 Frontend
-                </h3>
-                <ul className="space-y-2 text-neutral-700 dark:text-neutral-300">
-                  <li>• React 18.3.1</li>
-                  <li>• Vite 5.4.6</li>
-                  <li>• TailwindCSS 3.4.11</li>
-                  <li>• Framer Motion 11.5.4</li>
-                  <li>• Axios 1.7.7</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-3 text-primary-600 dark:text-primary-400">
-                  ⚙️ Backend
-                </h3>
-                <ul className="space-y-2 text-neutral-700 dark:text-neutral-300">
-                  <li>• FastAPI 0.104.1</li>
-                  <li>• SQLModel 0.0.14</li>
-                  <li>• SQLite (Base de datos)</li>
-                  <li>• JWT (python-jose)</li>
-                  <li>• bcrypt (passlib)</li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-700">
-              <h3 className="text-xl font-bold mb-3 text-primary-600 dark:text-primary-400">
-                ♿ Accesibilidad
-              </h3>
-              <ul className="space-y-2 text-neutral-700 dark:text-neutral-300">
-                <li>• WCAG 2.2 Level AA Compliance</li>
-                <li>• Web Speech API (TTS)</li>
-                <li>• Navegación por teclado completa</li>
-                <li>• Alto contraste y texto redimensionable</li>
-                <li>• ARIA labels y roles semánticos</li>
-              </ul>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Equipo */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-700 text-white">
-        <div className="container-custom text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold mb-8">👥 Institución</h2>
-            <div className="max-w-md mx-auto card p-8 bg-white/10 backdrop-blur-lg">
-              <div className="text-6xl mb-4">🎓</div>
-              <h3 className="text-2xl font-bold mb-2">{team[0].name}</h3>
-              <p className="text-lg opacity-90 mb-2">{team[0].role}</p>
-              <p className="text-sm opacity-75">{team[0].desc}</p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 container-custom text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto"
-        >
-          <h2 className="text-4xl font-bold gradient-text mb-6">
-            ¿Listo para comenzar?
-          </h2>
-          <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-8">
-            Únete a EduPredict y mejora tu rendimiento académico
+        <GlassPanel neon className="p-8 text-center space-y-4">
+          <h3 className="text-2xl font-bold text-textPrimary">Institucion ULEAM</h3>
+          <p className="text-textMuted max-w-3xl mx-auto">
+            {t('about_commitment') || 'Proyecto desarrollado para fortalecer la toma de decisiones academicas y ofrecer un acompanamiento proactivo a nuestros estudiantes.'}
           </p>
-          <a href="/usuarios" className="btn btn-primary px-10 py-4 text-lg font-semibold">
-            🚀 Comenzar Ahora
-          </a>
-        </motion.div>
-      </section>
+          <Button as={Link} to="/contact" variant="neon" className="px-8 py-3">
+            {t('contact') || 'Contactar al equipo'}
+          </Button>
+        </GlassPanel>
+      </div>
     </div>
   )
 }

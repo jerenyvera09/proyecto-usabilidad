@@ -1,44 +1,41 @@
 # Backend - EduPredict API
 
-Sistema de predicción de rendimiento académico - API REST con FastAPI.
+API REST construida con FastAPI que expone el pipeline de prediccion academica (Regresion Logistica, Decision Tree, Random Forest y KNN), genera reportes PDF y persiste el historial en SQLite.
 
-## 🚀 Instalación
+## Instalacion
 
 ```bash
-# Crear entorno virtual
-python -m venv venv
-
-# Activar entorno (Windows)
-venv\Scripts\activate
-
-# Instalar dependencias
+python -m venv .venv
+.venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
-## ▶️ Ejecución
+## Ejecucion
 
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-## 📚 Documentación API
+El servidor crea la base SQLite en `./data/edupredict_v2.db` y carga/entrena el modelo en `app/ml/model.pkl` si no existe.
 
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+## Endpoints principales
 
-## 🔗 Endpoints
+- `POST /api/auth/register` - Registro (dominio @uleam.edu.ec).
+- `POST /api/auth/login` - Login y entrega de JWT.
+- `POST /api/predict` - Prediccion con payload `{horas_estudio, promedio, asistencia, tendencia, puntualidad, habitos}`. Devuelve riesgo (alto/medio/bajo), score, recomendaciones, URL de PDF y alertas.
+- `GET /api/predictions/{id}/pdf` - Descargar reporte PDF de la prediccion.
+- `GET /api/students` - Listado global de predicciones.
+- `GET /api/students/{usuario_id}` - Historial por usuario.
+- `GET /api/students/me/predicciones` - Historial del usuario autenticado (JWT).
+- `GET /api/stats` - Dashboard de metricas (distribucion de riesgo, score promedio, alertas tempranas y metricas del modelo).
+- `GET /api/model/metrics` - Metricas completas del modelo entrenado.
 
-### Autenticación
+## Carpeta ML (`app/ml`)
 
-- `POST /api/auth/register` - Registrar usuario
-- `POST /api/auth/login` - Iniciar sesión
+- `preprocessing.py` - Limpieza, normalizacion y generacion de dataset sintetico.
+- `train_models.py` - Entrena los 4 algoritmos y guarda el mejor en `model.pkl`.
+- `evaluate.py` - Accuracy, F1 y matriz de confusion.
+- `utils.py` - Carga del modelo, prediccion, recomendaciones y generacion de PDF.
+- `model.pkl` - Modelo ya entrenado listo para usar.
 
-### Predicciones
-
-- `POST /api/predict` - Crear predicción
-- `GET /api/students` - Listar predicciones
-- `GET /api/students/{id}` - Predicciones de un usuario
-
-### Estadísticas
-
-- `GET /api/stats` - Estadísticas generales
+Documentacion interactiva disponible en `/docs` y `/redoc`.

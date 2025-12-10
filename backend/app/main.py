@@ -1,39 +1,58 @@
 """
-EduPredict - Sistema de Predicción de Rendimiento Académico
-Backend API REST con FastAPI
-ULEAM 6A 2025-2
+EduPredict - Sistema Web de Prediccion de Rendimiento Academico
+Backend API REST con FastAPI + pipeline de IA (Regresion Logistica, Arboles
+de Decision, Random Forest y KNN).
 """
 
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Session, select
-from typing import List
-import os
 from datetime import datetime, timedelta
+import os
+from typing import List, Optional
+
 import jwt
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
+from sqlmodel import Session, select
 
 from .database import create_db_and_tables, get_session
+from .ml.utils import (
+    build_pdf_report,
+    generate_recommendations,
+    get_model_report,
+    load_or_train_model,
+    normalize_payload,
+    predict_with_model,
+)
 from .models import (
-    Usuario, UsuarioCreate, UsuarioLogin, UsuarioResponse,
-    Prediccion, PrediccionCreate, PrediccionResponse
+    Prediccion,
+    PrediccionCreate,
+    PrediccionResponse,
+    Usuario,
+    UsuarioCreate,
+    UsuarioLogin,
+    UsuarioResponse,
 )
 
-# Configuración
+# Configuracion
 SECRET_KEY = os.getenv("SECRET_KEY", "edupredict-uleam-2025-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer(auto_error=False)
 
 app = FastAPI(
     title="EduPredict API",
-    description="Sistema de Predicción de Rendimiento Académico - ULEAM",
-    version="1.0.0"
+    description="Sistema de Prediccion de Rendimiento Academico - ULEAM",
+    version="1.1.0",
 )
 
 # CORS
-origins = os.getenv("ALLOW_ORIGINS", "http://localhost:5173,http://localhost:5174,http://localhost:5175").split(",")
+origins = os.getenv(
+    "ALLOW_ORIGINS", "http://localhost:5173,http://localhost:5174,http://localhost:5175"
+).split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,126 +62,117 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializar BD al arrancar
+# Modelo global en memoria
+MODEL_BUNDLE = {}
+
+
 @app.on_event("startup")
 def on_startup():
+    """Inicializa BD y carga/entrena el modelo ML."""
     create_db_and_tables()
-    print("✅ Base de datos inicializada correctamente")
+    global MODEL_BUNDLE
+    MODEL_BUNDLE = load_or_train_model()
+    print("Base de datos y modelo ML listos")
+
 
 # ============================================
 # UTILIDADES
 # ============================================
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verificar contraseña"""
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password: str) -> str:
-    """Hash de contraseña"""
     return pwd_context.hash(password)
 
+
 def create_access_token(data: dict):
-    """Crear JWT token"""
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def calcular_riesgo(nota_promedio: float, asistencia: int, horas_estudio: int) -> dict:
-    """
-    Algoritmo de predicción de riesgo académico
-    Retorna: {"riesgo": "bajo|medio|alto", "score": 0-100, "recomendacion": "..."}
-    """
-    # Score ponderado (0-100)
-    score_nota = (nota_promedio / 10) * 40  # 40% peso
-    score_asistencia = (asistencia / 100) * 35  # 35% peso
-    score_horas = min((horas_estudio / 20) * 25, 25)  # 25% peso (máx 20h)
-    
-    score_total = score_nota + score_asistencia + score_horas
-    
-    # Determinar riesgo
-    if score_total >= 75:
-        riesgo = "bajo"
-        recomendacion = "Excelente desempeño. Mantén tus hábitos de estudio y asistencia."
-    elif score_total >= 50:
-        riesgo = "medio"
-        recomendacion = "Buen progreso, pero puedes mejorar. Incrementa tus horas de estudio y asistencia."
-    else:
-        riesgo = "alto"
-        recomendacion = "Se requiere intervención urgente. Consulta con tu tutor académico y ajusta tu plan de estudio."
-    
-    return {
-        "riesgo": riesgo,
-        "score": round(score_total, 2),
-        "recomendacion": recomendacion
-    }
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    session: Session = Depends(get_session),
+) -> Optional[Usuario]:
+    """Obtiene al usuario autenticado a partir del JWT (si existe)."""
+    if credentials is None:
+        return None
+
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token invalido")
+
+    usuario = session.exec(select(Usuario).where(Usuario.email == email)).first()
+    if not usuario:
+        raise HTTPException(status_code=401, detail="Usuario no encontrado")
+    return usuario
+
+
+def validar_payload(payload: dict):
+    """Valida rangos numericos basicos de la peticion /predict."""
+    if not (0 <= payload["promedio"] <= 10):
+        raise HTTPException(status_code=400, detail="promedio debe estar entre 0 y 10")
+    if not (0 <= payload["asistencia"] <= 100):
+        raise HTTPException(status_code=400, detail="asistencia debe estar entre 0 y 100")
+    if not (0 <= payload["horas_estudio"] <= 60):
+        raise HTTPException(status_code=400, detail="horas_estudio debe estar entre 0 y 60")
+    if not (-10 <= payload["tendencia"] <= 10):
+        raise HTTPException(status_code=400, detail="tendencia fuera de rango (-10 a 10)")
+    if not (0 <= payload["puntualidad"] <= 100):
+        raise HTTPException(status_code=400, detail="puntualidad debe estar entre 0 y 100")
+    if not (0 <= payload["habitos"] <= 10):
+        raise HTTPException(status_code=400, detail="habitos debe estar entre 0 y 10")
+
 
 # ============================================
-# RUTAS - AUTENTICACIÓN
+# RUTAS - AUTENTICACION
 # ============================================
 
-@app.post("/api/auth/register", response_model=UsuarioResponse, tags=["Autenticación"])
+
+@app.post("/api/auth/register", response_model=UsuarioResponse, tags=["Autenticacion"])
 def registrar_usuario(usuario: UsuarioCreate, session: Session = Depends(get_session)):
-    """
-    Registrar nuevo usuario
-    - Email debe ser @uleam.edu.ec
-    - Contraseña mínimo 6 caracteres
-    """
-    # Validar email ULEAM
+    """Registrar nuevo usuario (dominio @uleam.edu.ec)."""
     if not usuario.email.endswith("@uleam.edu.ec"):
-        raise HTTPException(
-            status_code=400,
-            detail="El email debe ser del dominio @uleam.edu.ec"
-        )
-    
-    # Validar contraseña
+        raise HTTPException(status_code=400, detail="El email debe ser del dominio @uleam.edu.ec")
+
     if len(usuario.password) < 6:
-        raise HTTPException(
-            status_code=400,
-            detail="La contraseña debe tener al menos 6 caracteres"
-        )
-    
-    # Verificar si el email ya existe
+        raise HTTPException(status_code=400, detail="La contrasena debe tener al menos 6 caracteres")
+
     existing = session.exec(select(Usuario).where(Usuario.email == usuario.email)).first()
     if existing:
-        raise HTTPException(
-            status_code=400,
-            detail="Este email ya está registrado"
-        )
-    
-    # Crear usuario
+        raise HTTPException(status_code=400, detail="Este email ya esta registrado")
+
     db_usuario = Usuario(
         nombre=usuario.nombre,
         email=usuario.email,
         password_hash=get_password_hash(usuario.password),
-        rol=usuario.rol or "estudiante"
+        rol=usuario.rol or "estudiante",
     )
-    
+
     session.add(db_usuario)
     session.commit()
     session.refresh(db_usuario)
-    
     return db_usuario
 
-@app.post("/api/auth/login", tags=["Autenticación"])
+
+@app.post("/api/auth/login", tags=["Autenticacion"])
 def login(credentials: UsuarioLogin, session: Session = Depends(get_session)):
-    """
-    Login de usuario
-    Retorna JWT token
-    """
-    # Buscar usuario
+    """Login de usuario - retorna JWT."""
     usuario = session.exec(select(Usuario).where(Usuario.email == credentials.email)).first()
-    
+
     if not usuario or not verify_password(credentials.password, usuario.password_hash):
-        raise HTTPException(
-            status_code=401,
-            detail="Email o contraseña incorrectos"
-        )
-    
-    # Crear token
+        raise HTTPException(status_code=401, detail="Email o contrasena incorrectos")
+
     access_token = create_access_token(data={"sub": usuario.email, "id": usuario.id})
-    
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -170,121 +180,177 @@ def login(credentials: UsuarioLogin, session: Session = Depends(get_session)):
             "id": usuario.id,
             "nombre": usuario.nombre,
             "email": usuario.email,
-            "rol": usuario.rol
-        }
+            "rol": usuario.rol,
+        },
     }
+
 
 # ============================================
 # RUTAS - PREDICCIONES
 # ============================================
 
+
 @app.post("/api/predict", response_model=PrediccionResponse, tags=["Predicciones"])
-def crear_prediccion(prediccion: PrediccionCreate, session: Session = Depends(get_session)):
+def crear_prediccion(
+    prediccion: PrediccionCreate,
+    session: Session = Depends(get_session),
+    usuario: Optional[Usuario] = Depends(get_current_user),
+):
     """
-    Crear nueva predicción de rendimiento académico
-    Recibe: nota_promedio (0-10), asistencia (0-100%), horas_estudio (0-50)
+    Crear nueva prediccion de rendimiento academico usando el pipeline de ML.
+    Recibe: horas_estudio, promedio, asistencia, tendencia, puntualidad, habitos.
     """
-    # Validaciones
-    if not (0 <= prediccion.nota_promedio <= 10):
-        raise HTTPException(status_code=400, detail="nota_promedio debe estar entre 0 y 10")
-    if not (0 <= prediccion.asistencia <= 100):
-        raise HTTPException(status_code=400, detail="asistencia debe estar entre 0 y 100")
-    if not (0 <= prediccion.horas_estudio <= 50):
-        raise HTTPException(status_code=400, detail="horas_estudio debe estar entre 0 y 50")
-    
-    # Calcular riesgo
-    resultado = calcular_riesgo(
-        prediccion.nota_promedio,
-        prediccion.asistencia,
-        prediccion.horas_estudio
-    )
-    
-    # Guardar predicción
+    global MODEL_BUNDLE
+    if not MODEL_BUNDLE:
+        MODEL_BUNDLE = load_or_train_model()
+
+    payload = normalize_payload(prediccion.dict())
+    validar_payload(payload)
+
+    ml_result = predict_with_model(MODEL_BUNDLE, payload)
+    recomendaciones = generate_recommendations(ml_result["riesgo"], payload)
+
     db_prediccion = Prediccion(
-        usuario_id=prediccion.usuario_id,
-        nota_promedio=prediccion.nota_promedio,
-        asistencia=prediccion.asistencia,
-        horas_estudio=prediccion.horas_estudio,
-        riesgo=resultado["riesgo"],
-        score=resultado["score"],
-        recomendacion=resultado["recomendacion"]
+        usuario_id=prediccion.usuario_id or (usuario.id if usuario else None),
+        promedio=payload["promedio"],
+        asistencia=payload["asistencia"],
+        horas_estudio=payload["horas_estudio"],
+        tendencia=payload["tendencia"],
+        puntualidad=payload["puntualidad"],
+        habitos=payload["habitos"],
+        riesgo=ml_result["riesgo"],
+        score=ml_result["score"],
+        recomendacion=" ".join(recomendaciones),
+        modelo=MODEL_BUNDLE.get("best_model"),
     )
-    
+
     session.add(db_prediccion)
     session.commit()
     session.refresh(db_prediccion)
-    
-    return db_prediccion
+
+    pdf_url = f"/api/predictions/{db_prediccion.id}/pdf"
+    return {
+        **db_prediccion.dict(),
+        "recomendaciones": recomendaciones,
+        "pdf_url": pdf_url,
+        "alerta_docente": db_prediccion.riesgo == "alto",
+        "probabilidades": ml_result.get("probabilidades", {}),
+    }
+
+
+@app.get("/api/predictions/{prediccion_id}/pdf", tags=["Predicciones"])
+def descargar_pdf(prediccion_id: int, session: Session = Depends(get_session)):
+    """Genera y descarga el PDF de una prediccion."""
+    pred = session.get(Prediccion, prediccion_id)
+    if not pred:
+        raise HTTPException(status_code=404, detail="Prediccion no encontrada")
+
+    buffer = build_pdf_report(pred.dict(), MODEL_BUNDLE)
+    filename = f"reporte-prediccion-{prediccion_id}.pdf"
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
 
 @app.get("/api/students", response_model=List[PrediccionResponse], tags=["Predicciones"])
-def listar_predicciones(
-    skip: int = 0,
-    limit: int = 100,
-    session: Session = Depends(get_session)
-):
-    """
-    Listar todas las predicciones
-    Paginación con skip y limit
-    """
+def listar_predicciones(skip: int = 0, limit: int = 100, session: Session = Depends(get_session)):
+    """Listar todas las predicciones."""
     predicciones = session.exec(select(Prediccion).offset(skip).limit(limit)).all()
-    return predicciones
+    return [
+        {**p.dict(), "pdf_url": f"/api/predictions/{p.id}/pdf", "alerta_docente": p.riesgo == "alto"}
+        for p in predicciones
+    ]
 
-@app.get("/api/students/{usuario_id}", response_model=List[PrediccionResponse], tags=["Predicciones"])
+
+@app.get(
+    "/api/students/{usuario_id}",
+    response_model=List[PrediccionResponse],
+    tags=["Predicciones"],
+)
 def listar_predicciones_usuario(usuario_id: int, session: Session = Depends(get_session)):
-    """
-    Listar predicciones de un usuario específico
-    """
-    predicciones = session.exec(
-        select(Prediccion).where(Prediccion.usuario_id == usuario_id)
-    ).all()
-    return predicciones
+    """Listar predicciones de un usuario especifico."""
+    predicciones = session.exec(select(Prediccion).where(Prediccion.usuario_id == usuario_id)).all()
+    return [
+        {**p.dict(), "pdf_url": f"/api/predictions/{p.id}/pdf", "alerta_docente": p.riesgo == "alto"}
+        for p in predicciones
+    ]
+
+
+@app.get(
+    "/api/students/me/predicciones",
+    response_model=List[PrediccionResponse],
+    tags=["Predicciones"],
+)
+def listar_predicciones_me(
+    session: Session = Depends(get_session),
+    usuario: Usuario = Depends(get_current_user),
+):
+    """Historial de predicciones del usuario autenticado."""
+    predicciones = session.exec(select(Prediccion).where(Prediccion.usuario_id == usuario.id)).all()
+    return [
+        {**p.dict(), "pdf_url": f"/api/predictions/{p.id}/pdf", "alerta_docente": p.riesgo == "alto"}
+        for p in predicciones
+    ]
+
 
 # ============================================
-# RUTAS - ESTADÍSTICAS
+# RUTAS - ESTADISTICAS Y MODELO
 # ============================================
 
-@app.get("/api/stats", tags=["Estadísticas"])
+
+@app.get("/api/stats", tags=["Estadisticas"])
 def obtener_estadisticas(session: Session = Depends(get_session)):
     """
-    Obtener estadísticas generales del sistema
+    Estadisticas generales del sistema + distribucion de riesgo para dashboard.
     """
     total_usuarios = len(session.exec(select(Usuario)).all())
-    total_predicciones = len(session.exec(select(Prediccion)).all())
-    
-    # Contar por nivel de riesgo
     predicciones = session.exec(select(Prediccion)).all()
+    total_predicciones = len(predicciones)
     riesgo_alto = sum(1 for p in predicciones if p.riesgo == "alto")
     riesgo_medio = sum(1 for p in predicciones if p.riesgo == "medio")
     riesgo_bajo = sum(1 for p in predicciones if p.riesgo == "bajo")
-    
-    # Promedio de score
-    avg_score = sum(p.score for p in predicciones) / len(predicciones) if predicciones else 0
-    
+    avg_score = sum(p.score for p in predicciones) / total_predicciones if predicciones else 0
+
+    alerta_temprana = [p for p in predicciones if p.riesgo == "alto"]
+
     return {
         "total_usuarios": total_usuarios,
         "total_predicciones": total_predicciones,
         "riesgo_alto": riesgo_alto,
         "riesgo_medio": riesgo_medio,
         "riesgo_bajo": riesgo_bajo,
-        "score_promedio": round(avg_score, 2)
+        "score_promedio": round(avg_score, 2),
+        "alertas_tempranas": len(alerta_temprana),
+        "modelo": get_model_report(MODEL_BUNDLE),
     }
 
+
+@app.get("/api/model/metrics", tags=["Estadisticas"])
+def metricas_modelo():
+    """Metadatos del modelo entrenado (para dashboard)."""
+    if not MODEL_BUNDLE:
+        raise HTTPException(status_code=503, detail="Modelo no cargado")
+    return get_model_report(MODEL_BUNDLE)
+
+
 # ============================================
-# RUTA RAÍZ
+# RUTA RAIZ
 # ============================================
+
 
 @app.get("/", tags=["General"])
 def root():
-    """Endpoint raíz - Información de la API"""
     return {
         "app": "EduPredict API",
-        "version": "1.0.0",
-        "description": "Sistema de Predicción de Rendimiento Académico - ULEAM",
+        "version": "1.1.0",
+        "description": "Sistema de Prediccion de Rendimiento Academico - ULEAM",
         "docs": "/docs",
-        "redoc": "/redoc"
+        "redoc": "/redoc",
     }
+
 
 @app.get("/health", tags=["General"])
 def health_check():
-    """Health check endpoint"""
     return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}

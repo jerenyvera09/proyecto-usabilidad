@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-// Configurar la base URL de la API
-const API_URL = '/api'
+// Configurar la base URL de la API usando variable de entorno
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
+const API_URL = `${API_BASE}/api`
 
-// Crear instancia de axios con configuración por defecto
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -11,7 +11,7 @@ const api = axios.create({
   }
 })
 
-// Interceptor para añadir el token JWT a todas las peticiones
+// Interceptor para anadir el token JWT a todas las peticiones
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
@@ -20,9 +20,7 @@ api.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 // Interceptor para manejar errores de respuesta
@@ -30,7 +28,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expirado o inválido
+      // Token expirado o invalido
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       window.location.href = '/usuarios'

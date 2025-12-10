@@ -9,7 +9,7 @@ export default function SplashScreen() {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-uleamRed via-bg900 to-uleamRedDark"
     >
       <div className="text-center space-y-6">
         {/* Logo animado */}
