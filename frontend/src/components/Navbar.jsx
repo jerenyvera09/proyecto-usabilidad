@@ -32,12 +32,13 @@ export default function Navbar(){
     console.log('[Navbar] Montado correctamente')
   }, [])
 
-  const navLinkBase = 'inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all hover:text-white hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accentBlue'
+  const navLinkBase = 'inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all hover:text-white hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accentPurple'
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-uleamRed/20 via-bg900/90 to-uleamRedDark/25 backdrop-blur-lg border-b border-white/10 shadow-soft">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3 gap-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-xl border-b border-white/10 shadow-soft">
+        <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-transparent to-white/0 pointer-events-none" aria-hidden />
+        <div className="relative max-w-7xl mx-auto flex items-center justify-between px-6 py-3 gap-4">
           <Link to="/" className="flex items-center gap-3 logo-link focus-visible" title="EduPredict - ULEAM" aria-label="Ir al inicio">
             <div className="h-11 w-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center shadow-soft">
               <picture>
@@ -58,9 +59,9 @@ export default function Navbar(){
               </picture>
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="font-extrabold text-lg tracking-tight text-grayLight drop-shadow-neon">EduPredict</span>
-              <span className="text-[11px] text-textMuted bg-white/5 px-2 py-0.5 rounded-full border border-white/10 w-fit">
-                ULEAM · Académico
+              <span className="font-extrabold text-lg tracking-tight text-textPrimary drop-shadow-neon">EduPredict</span>
+              <span className="text-[11px] text-textMuted bg-white/10 px-2 py-0.5 rounded-full border border-white/10 w-fit">
+                ULEAM · Inteligencia académica
               </span>
             </div>
           </Link>
@@ -88,14 +89,14 @@ export default function Navbar(){
                 {t('about')} <HiChevronDown aria-hidden />
               </button>
               {aboutOpen && (
-                <div role="menu" className="absolute mt-3 right-0 w-56 rounded-2xl border border-white/10 bg-bg800 shadow-soft p-2">
-                  <Link to="/about" className="block px-3 py-2 rounded-xl hover:bg-white/5" role="menuitem" onClick={() => setAboutOpen(false)}>
+                <div role="menu" className="absolute mt-3 right-0 w-56 rounded-2xl border border-white/10 bg-bg800/95 backdrop-blur-xl shadow-soft p-2">
+                  <Link to="/about" className="block px-3 py-2 rounded-xl hover:bg-white/10" role="menuitem" onClick={() => setAboutOpen(false)}>
                     {t('about')}
                   </Link>
-                  <Link to="/accesibilidad" className="block px-3 py-2 rounded-xl hover:bg-white/5" role="menuitem" onClick={() => setAboutOpen(false)}>
+                  <Link to="/accesibilidad" className="block px-3 py-2 rounded-xl hover:bg-white/10" role="menuitem" onClick={() => setAboutOpen(false)}>
                     {t('accessibility_menu') || 'Accesibilidad'}
                   </Link>
-                  <Link to="/contact" className="block px-3 py-2 rounded-xl hover:bg-white/5" role="menuitem" onClick={() => setAboutOpen(false)}>
+                  <Link to="/contact" className="block px-3 py-2 rounded-xl hover:bg-white/10" role="menuitem" onClick={() => setAboutOpen(false)}>
                     {t('contact')}
                   </Link>
                 </div>
@@ -122,9 +123,9 @@ export default function Navbar(){
               <span className="text-sm">{dark ? 'Claro' : 'Oscuro'}</span>
             </button>
             <select 
-              value={lang} 
-              onChange={e=> setLang(e.target.value)} 
-              className="bg-white/5 text-textPrimary border border-white/10 rounded-xl px-3 py-2 text-sm focus-visible"
+              value={lang}
+              onChange={e=> setLang(e.target.value)}
+              className="bg-white/10 text-textPrimary border border-white/20 rounded-xl px-3 py-2 text-sm focus-visible"
               aria-label="Seleccionar idioma"
             >
               <option value="es">ES</option>
@@ -132,14 +133,14 @@ export default function Navbar(){
             </select>
 
             {!user ? (
-              <Link to="/usuarios" className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 transition text-sm">
+              <Link to="/usuarios" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-uleamRed to-accentBlue text-white shadow-glow hover:opacity-95 transition text-sm">
                 <HiLogin aria-hidden /> <span className="text-sm">{t('login') || 'Login'}</span>
               </Link>
             ) : (
               <div className="relative">
                 <button
                   onClick={() => setProfileOpen((v) => !v)}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/10 text-sm backdrop-blur"
                   aria-haspopup="menu"
                   aria-expanded={profileOpen}
                   title={user?.nombre || user?.email}
@@ -147,19 +148,19 @@ export default function Navbar(){
                   <HiUserCircle aria-hidden /> <span className="text-sm">{user?.nombre || user?.email}</span>
                 </button>
                 {profileOpen && (
-                  <div className="absolute mt-3 right-0 bg-bg800 border border-white/10 rounded-2xl shadow-soft w-56 py-2 z-50">
-                    <Link to="/dashboard" className="block px-4 py-2 text-sm hover:bg-white/5" onClick={() => setProfileOpen(false)}>{t('dashboard')}</Link>
+                  <div className="absolute mt-3 right-0 bg-bg800/95 border border-white/10 rounded-2xl shadow-soft w-56 py-2 z-50 backdrop-blur-xl">
+                    <Link to="/dashboard" className="block px-4 py-2 text-sm hover:bg-white/10" onClick={() => setProfileOpen(false)}>{t('dashboard')}</Link>
                     {user?.is_admin && (
-                      <Link to="/admin" className="block px-4 py-2 text-sm hover:bg-white/5" onClick={() => setProfileOpen(false)}>Administrar usuarios</Link>
+                      <Link to="/admin" className="block px-4 py-2 text-sm hover:bg-white/10" onClick={() => setProfileOpen(false)}>Administrar usuarios</Link>
                     )}
-                    <button onClick={() => { logout(); setProfileOpen(false) }} className="w-full text-left px-4 py-2 text-sm hover:bg-white/5">{t('logout') || 'Logout'}</button>
+                    <button onClick={() => { logout(); setProfileOpen(false) }} className="w-full text-left px-4 py-2 text-sm hover:bg-white/10">{t('logout') || 'Logout'}</button>
                   </div>
                 )}
               </div>
             )}
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="md:hidden p-2 rounded-xl border border-white/10 bg-white/5"
+              className="md:hidden p-2 rounded-xl border border-white/10 bg-white/10"
               aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
               aria-expanded={mobileOpen}
             >
@@ -170,7 +171,7 @@ export default function Navbar(){
       </header>
 
       {mobileOpen && (
-        <div className="fixed top-[70px] left-0 right-0 z-40 md:hidden bg-bg900 border-b border-white/10 shadow-soft">
+        <div className="fixed top-[70px] left-0 right-0 z-40 md:hidden bg-bg900/95 backdrop-blur-xl border-b border-white/10 shadow-soft">
           <nav className="px-6 py-4 space-y-2">
             <Link to="/" className="block py-2 hover:text-white" onClick={() => setMobileOpen(false)}>{t('home')}</Link>
             <Link to="/prediction" className="block py-2 hover:text-white" onClick={() => setMobileOpen(false)}>{t('prediction')}</Link>
@@ -194,15 +195,15 @@ export default function Navbar(){
             <div className="flex items-center gap-2 mt-4">
               <button
                 onClick={() => setDark((prev) => !prev)}
-                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-sm"
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/10 text-sm"
               >
-                {dark ? <FaSun aria-hidden /> : <FaMoon aria-hidden />}
+                {dark ? <HiSun aria-hidden /> : <HiMoon aria-hidden />}
                 <span className="text-sm">{dark ? 'Claro' : 'Oscuro'}</span>
               </button>
-              <select 
-                value={lang} 
-                onChange={e=> setLang(e.target.value)} 
-                className="bg-white/5 text-textPrimary border border-white/10 rounded-xl px-3 py-2 text-sm"
+              <select
+                value={lang}
+                onChange={e=> setLang(e.target.value)}
+                className="bg-white/10 text-textPrimary border border-white/10 rounded-xl px-3 py-2 text-sm"
                 aria-label="Seleccionar idioma"
               >
                 <option value="es">ES</option>

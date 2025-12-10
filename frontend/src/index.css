@@ -6,18 +6,27 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply border-white/10;
-  }
-
   body {
     @apply bg-bg900 text-textPrimary font-sans antialiased min-h-screen;
     @apply transition-colors duration-300;
-    background-color: #050d24;
+    background: radial-gradient(circle at 15% 20%, rgba(43, 163, 231, 0.16), transparent 28%),
+      radial-gradient(circle at 82% 18%, rgba(89, 166, 107, 0.16), transparent 26%),
+      linear-gradient(135deg, #04101f 0%, #09223b 50%, #0b1a30 100%);
+    position: relative;
+    isolation: isolate;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
     background-image:
-      radial-gradient(circle at 20% 20%, rgba(200, 16, 46, 0.12), transparent 30%),
-      radial-gradient(circle at 80% 0%, rgba(79, 139, 255, 0.12), transparent 30%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+      linear-gradient(120deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(300deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 180px 180px, 220px 220px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: -1;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -51,27 +60,28 @@
   /* Botones */
   .btn {
     @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold;
-    @apply transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accentBlue focus-visible:ring-offset-bg900;
+    @apply transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accentPurple focus-visible:ring-offset-bg900;
     min-height: 44px;
+    letter-spacing: 0.01em;
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-uleamRed to-accentPurple text-textPrimary;
-    @apply shadow-[0_15px_45px_rgba(200,16,46,0.35)] hover:shadow-[0_18px_55px_rgba(79,139,255,0.35)] hover:-translate-y-0.5;
+    @apply bg-gradient-to-r from-uleamRed to-accentBlue text-textPrimary;
+    @apply shadow-[0_15px_45px_rgba(28,124,235,0.35)] hover:shadow-[0_18px_55px_rgba(89,166,107,0.35)] hover:-translate-y-0.5;
   }
 
   .btn-secondary {
-    @apply bg-white/10 text-textPrimary border border-white/15 hover:bg-white/15;
+    @apply bg-white/10 text-textPrimary border border-white/15 hover:bg-white/15 backdrop-blur-xl;
   }
 
   .btn-outline {
-    @apply border border-uleamRed/70 text-textPrimary hover:border-accentBlue hover:text-textPrimary hover:bg-white/5;
+    @apply border border-white/40 text-textPrimary hover:border-white hover:text-textPrimary hover:bg-white/10;
   }
 
   /* Inputs */
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-textPrimary;
-    @apply placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-accentBlue focus:border-transparent;
+    @apply w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-textPrimary backdrop-blur-lg;
+    @apply placeholder:text-[#b5c2d6] focus:ring-2 focus:ring-uleamRed focus:border-transparent;
     @apply transition-all duration-200 shadow-[0_10px_30px_rgba(0,0,0,0.35)];
   }
 
@@ -85,8 +95,8 @@
 
   /* Cards */
   .card {
-    @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-[24px] text-textPrimary;
-    @apply shadow-[0_24px_70px_rgba(0,0,0,0.45)] transition-all duration-300;
+    @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-[26px] text-textPrimary;
+    @apply shadow-[0_24px_70px_rgba(0,0,0,0.38)] transition-all duration-300;
   }
 
   .card-hover {
@@ -94,8 +104,8 @@
   }
 
   .card-glass {
-    @apply rounded-2xl border border-white/15 bg-white/8 backdrop-blur-[28px] text-textPrimary;
-    @apply shadow-[0_20px_60px_rgba(0,0,0,0.4)];
+    @apply rounded-2xl border border-white/15 bg-gradient-to-br from-white/10 via-white/5 to-white/0 backdrop-blur-[28px] text-textPrimary;
+    @apply shadow-[0_20px_60px_rgba(0,0,0,0.36)];
   }
 
   .neon-border {
@@ -107,15 +117,15 @@
     position: absolute;
     inset: -1px;
     border-radius: inherit;
-    background: linear-gradient(120deg, rgba(200, 16, 46, 0.32), rgba(79, 139, 255, 0.28), rgba(160, 112, 255, 0.28));
+    background: linear-gradient(120deg, rgba(28, 124, 235, 0.35), rgba(89, 166, 107, 0.32), rgba(43, 163, 231, 0.26));
     opacity: 0.9;
     pointer-events: none;
-    filter: drop-shadow(0 0 24px rgba(79, 139, 255, 0.22));
+    filter: drop-shadow(0 0 24px rgba(89, 166, 107, 0.28));
   }
 
   .section {
-    @apply rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-white/0 p-6 sm:p-8 space-y-6;
-    @apply shadow-[0_22px_70px_rgba(0,0,0,0.5)];
+    @apply rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-white/0 p-6 sm:p-8 space-y-6;
+    @apply shadow-[0_22px_70px_rgba(0,0,0,0.46)] backdrop-blur-2xl;
   }
 
   /* Container */

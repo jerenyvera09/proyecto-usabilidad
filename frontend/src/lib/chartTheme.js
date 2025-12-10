@@ -1,14 +1,14 @@
 export const chartColors = {
-  red: '#C8102E',
-  darkRed: '#8E001A',
-  blue: '#4F8BFF',
-  purple: '#A070FF',
-  green: '#76B947',
-  amber: '#4F8BFF',
-  border: 'rgba(255,255,255,0.2)',
+  red: '#1C7CEB',
+  darkRed: '#09223B',
+  blue: '#2BA3E7',
+  purple: '#59A66B',
+  green: '#59A66B',
+  amber: '#2BA3E7',
+  border: 'rgba(255,255,255,0.25)',
   grid: 'rgba(255,255,255,0.08)',
-  label: '#F2F4F7',
-  tooltipBg: '#0B162F',
+  label: '#F5F7FA',
+  tooltipBg: '#0B1A30',
   tooltipBorder: 'rgba(255,255,255,0.14)',
 }
 

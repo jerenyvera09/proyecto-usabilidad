@@ -24,7 +24,7 @@ export default function NewsSection(){
   const { t } = useI18n()
 
   return (
-    <section className="py-14 bg-white dark:bg-neutral-900">
+    <section className="py-14 bg-gradient-to-br from-bg800/60 via-bg900 to-bg900/90">
       <div className="container-custom">
         <div className="grid md:grid-cols-3 gap-6">
           {items(t).map((card, i) => (
@@ -35,13 +35,13 @@ export default function NewsSection(){
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
               whileHover={{ y: -4, scale: 1.01 }}
-              className="p-6 rounded-2xl border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 shadow-sm"
+              className="p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-2xl shadow-soft"
             >
               <div className="flex items-start gap-4">
                 <div className="text-3xl" aria-hidden>{card.icon}</div>
                 <div>
                   <h3 className="font-semibold text-lg mb-1">{card.title}</h3>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-300">{card.desc}</p>
+                  <p className="text-sm text-textMuted">{card.desc}</p>
                 </div>
               </div>
             </motion.article>

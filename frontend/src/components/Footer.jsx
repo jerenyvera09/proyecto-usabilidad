@@ -7,7 +7,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="mt-16 bg-gradient-to-b from-bg900 via-bg800 to-bg900 border-t border-white/10 text-textMuted">
+    <footer className="mt-16 bg-gradient-to-b from-bg800 via-bg900 to-bg900 border-t border-white/10 text-textMuted">
       <div className="container-custom py-12 space-y-10">
         <div className="grid md:grid-cols-4 gap-8">
           <div className="card-glass p-5 border-white/5">
@@ -55,10 +55,10 @@ export default function Footer() {
           <div className="card-glass p-5 border-white/5">
             <h4 className="font-semibold mb-4 text-textPrimary">Redes Sociales</h4>
             <div className="flex gap-3" role="group" aria-label="Redes sociales">
-              <a href="https://www.facebook.com/uleam.ec" target="_blank" rel="noopener noreferrer" aria-label="Facebook ULEAM" className="p-2 rounded-full bg-white/10 border border-white/10 hover:bg-accentBlue/20 hover:text-accentBlue transition-all">
+              <a href="https://www.facebook.com/uleam.ec" target="_blank" rel="noopener noreferrer" aria-label="Facebook ULEAM" className="p-2 rounded-full bg-white/10 border border-white/10 hover:bg-uleamRed/20 hover:text-uleamRed transition-all">
                 <FaFacebook aria-hidden />
               </a>
-              <a href="https://www.instagram.com/uleam_ec/" target="_blank" rel="noopener noreferrer" aria-label="Instagram ULEAM" className="p-2 rounded-full bg-white/10 border border-white/10 hover:bg-accentBlue/20 hover:text-accentBlue transition-all">
+              <a href="https://www.instagram.com/uleam_ec/" target="_blank" rel="noopener noreferrer" aria-label="Instagram ULEAM" className="p-2 rounded-full bg-white/10 border border-white/10 hover:bg-uleamRed/20 hover:text-uleamRed transition-all">
                 <FaInstagram aria-hidden />
               </a>
               <a href="https://www.youtube.com/@ULEAMTV" target="_blank" rel="noopener noreferrer" aria-label="YouTube ULEAM" className="p-2 rounded-full bg-white/10 border border-white/10 hover:bg-red-500/20 hover:text-red-300 transition-all">
