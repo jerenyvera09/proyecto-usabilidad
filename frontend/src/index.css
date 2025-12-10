@@ -171,12 +171,14 @@
   }
 
   .lang-select {
-    @apply bg-white/10 text-textPrimary border border-white/20 rounded-xl px-3 py-2 text-sm backdrop-blur-md shadow-soft;
+    @apply bg-bg800/90 text-textPrimary border border-white/30 rounded-xl px-3 py-2 text-sm backdrop-blur-md shadow-soft;
+    @apply hover:bg-bg800 hover:border-white/40 transition-all;
   }
 
   .lang-select option {
-    background-color: #0b1a30;
+    background-color: #0a1124;
     color: #f5f7fa;
+    padding: 8px 12px;
   }
 }
 
