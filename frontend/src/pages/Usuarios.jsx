@@ -226,7 +226,7 @@ export default function Usuarios() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f9fafb] via-white to-[#f9fafb] dark:from-neutral-900 dark:to-neutral-800 py-16">
+    <div className="min-h-screen py-16 bg-[#f4f6f8] dark:bg-[#0a0f1a]">
       {/* Notificaciones de seguridad accesibles */}
       <div 
         className="fixed top-20 right-6 z-50 space-y-3 max-w-sm"
@@ -273,8 +273,13 @@ export default function Usuarios() {
       </div>
 
       <div className="container-custom">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="card p-8 max-w-md mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md mx-auto p-8 rounded-[18px] shadow-xl border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/10 backdrop-blur-[12px]"
+        >
           <div className="text-center mb-8">
+            <img src="/logo-uleam.png" alt="Logo ULEAM" className="auth-logo mx-auto" />
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-3xl font-bold">E</div>
             <h1 className="text-3xl font-bold gradient-text mb-2 inline-flex items-center gap-2">
               {isLogin ? (t('auth_login') || 'Iniciar Sesión') : (t('auth_register') || 'Registrarse')}
@@ -285,7 +290,7 @@ export default function Usuarios() {
                 </ul>
               </TooltipHelp>
             </h1>
-            <p className="text-neutral-600 dark:text-neutral-400">
+            <p className="font-medium text-neutral-600 dark:text-neutral-400/80">
               {isLogin ? (t('auth_login_subtitle') || 'Accede a tu cuenta de EduPredict') : (t('auth_register_subtitle') || 'Crea tu cuenta institucional')}
             </p>
           </div>
@@ -362,7 +367,7 @@ export default function Usuarios() {
             <div>
               <label className="label" htmlFor="email">Correo Institucional *</label>
               <div className="relative">
-                <input id="email" type="email" required aria-required="true" ref={isLogin ? firstFieldRef : null} className={`input pr-10 ${touched.email && (validity.email ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onBlur={() => setTouched({ ...touched, email: true })} placeholder="usuario@uleam.edu.ec" aria-invalid={touched.email && !validity.email} aria-describedby="email-help" />
+                <input id="email" type="email" required aria-required="true" ref={isLogin ? firstFieldRef : null} className={`w-full px-4 py-3 rounded-lg border transition-colors bg-white/5 dark:bg-white/5 border-neutral-300 dark:border-neutral-600 focus:ring-2 focus:ring-primary-500 focus:border-transparent pr-10 ${touched.email && (validity.email ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onBlur={() => setTouched({ ...touched, email: true })} placeholder="usuario@uleam.edu.ec" aria-invalid={touched.email && !validity.email} aria-describedby="email-help" />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2" aria-hidden>{touched.email && (validity.email ? '✓' : '✗')}</span>
               </div>
               <p id="email-help" className="text-xs text-neutral-500 dark:text-neutral-400 mt-1" aria-live="polite">{touched.email && !validity.email ? 'Usa tu correo @uleam.edu.ec' : '* Debes usar tu correo @uleam.edu.ec'}</p>
@@ -371,7 +376,7 @@ export default function Usuarios() {
             <div>
               <label className="label" htmlFor="password">Contraseña *</label>
               <div className="relative">
-                <input id="password" type="password" required aria-required="true" minLength={8} className={`input pr-10 ${touched.password && (validity.password ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} onBlur={() => setTouched({ ...touched, password: true })} placeholder="••••••••" aria-invalid={touched.password && !validity.password} aria-describedby="password-help" />
+                <input id="password" type="password" required aria-required="true" minLength={8} className={`w-full px-4 py-3 rounded-lg border transition-colors bg-white/5 dark:bg-white/5 border-neutral-300 dark:border-neutral-600 focus:ring-2 focus:ring-primary-500 focus:border-transparent pr-10 ${touched.password && (validity.password ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} onBlur={() => setTouched({ ...touched, password: true })} placeholder="••••••••" aria-invalid={touched.password && !validity.password} aria-describedby="password-help" />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2" aria-hidden>{touched.password && (validity.password ? '✓' : '✗')}</span>
               </div>
               <p id="password-help" className="text-xs text-neutral-500 dark:text-neutral-400 mt-1" aria-live="polite">{touched.password && !validity.password ? 'La contraseña debe tener al menos 8 caracteres' : '* Mínimo 8 caracteres'}</p>
@@ -381,7 +386,7 @@ export default function Usuarios() {
               <div>
                 <label className="label" htmlFor="confirm">Confirmar Contraseña *</label>
                 <div className="relative">
-                  <input id="confirm" type="password" required aria-required="true" minLength={8} className={`input pr-10 ${touched.confirmPassword && (validity.confirmPassword ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} onBlur={() => setTouched({ ...touched, confirmPassword: true })} placeholder="••••••••" aria-invalid={touched.confirmPassword && !validity.confirmPassword} aria-describedby="confirm-help" />
+                  <input id="confirm" type="password" required aria-required="true" minLength={8} className={`w-full px-4 py-3 rounded-lg border transition-colors bg-white/5 dark:bg-white/5 border-neutral-300 dark:border-neutral-600 focus:ring-2 focus:ring-primary-500 focus:border-transparent pr-10 ${touched.confirmPassword && (validity.confirmPassword ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} onBlur={() => setTouched({ ...touched, confirmPassword: true })} placeholder="••••••••" aria-invalid={touched.confirmPassword && !validity.confirmPassword} aria-describedby="confirm-help" />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2" aria-hidden>{touched.confirmPassword && (validity.confirmPassword ? '✓' : '✗')}</span>
                 </div>
                 <p id="confirm-help" className="text-xs mt-1" aria-live="polite">{touched.confirmPassword && !validity.confirmPassword ? 'Las contraseñas deben coincidir' : ''}</p>
@@ -392,7 +397,7 @@ export default function Usuarios() {
               <div>
                 <label className="label" htmlFor="carrera">Carrera *</label>
                 <div className="relative">
-                  <input id="carrera" type="text" required aria-required="true" className={`input pr-10 ${touched.carrera && (validity.carrera ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.carrera} onChange={(e) => setFormData({ ...formData, carrera: e.target.value })} onBlur={() => setTouched({ ...touched, carrera: true })} placeholder="Ingeniería en Sistemas" aria-invalid={touched.carrera && !validity.carrera} aria-describedby="carrera-help" />
+                  <input id="carrera" type="text" required aria-required="true" className={`w-full px-4 py-3 rounded-lg border transition-colors bg-white/5 dark:bg-white/5 border-neutral-300 dark:border-neutral-600 focus:ring-2 focus:ring-primary-500 focus:border-transparent pr-10 ${touched.carrera && (validity.carrera ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.carrera} onChange={(e) => setFormData({ ...formData, carrera: e.target.value })} onBlur={() => setTouched({ ...touched, carrera: true })} placeholder="Ingeniería en Sistemas" aria-invalid={touched.carrera && !validity.carrera} aria-describedby="carrera-help" />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2" aria-hidden>{touched.carrera && (validity.carrera ? '✓' : '✗')}</span>
                 </div>
                 <p id="carrera-help" className="text-xs mt-1" aria-live="polite">{touched.carrera && !validity.carrera ? 'Ingresa al menos 2 caracteres' : ''}</p>

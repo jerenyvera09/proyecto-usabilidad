@@ -177,6 +177,13 @@
     @apply bg-white/5 backdrop-blur-xl border border-white/10;
   }
 
+  /* Auth pages logo */
+  .auth-logo {
+    height: 55px;
+    margin-bottom: 12px;
+    opacity: 0.9;
+  }
+
   .shadow-soft {
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   }
