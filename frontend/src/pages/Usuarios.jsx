@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useI18n } from '../contexts/I18nContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -141,7 +141,7 @@ export default function Usuarios() {
         const { access_token, usuario } = response.data
         login(usuario, access_token)
         
-        // Resetear intentos fallidos al iniciar sesión exitosamente
+        // Resetear intentos fallidos al Iniciar sesión exitosamente
         setFailedAttempts(0)
         localStorage.removeItem('failedAttempts')
         localStorage.removeItem('lockUntil')
@@ -151,8 +151,8 @@ export default function Usuarios() {
         } else {
           localStorage.removeItem('remember')
         }
-        setSuccess(t('auth_login_success') || '¡Inicio de sesión exitoso!')
-        addSecurityNotification('✅ Inicio de sesión exitoso', 'success')
+        setSuccess(t('auth_login_success') || '¡Inicio de Sesión exitoso!')
+        addSecurityNotification('✅ Inicio de Sesión exitoso', 'success')
         setTimeout(() => navigate('/dashboard'), 800)
       } else {
         if (formData.password !== formData.confirmPassword) {
@@ -176,7 +176,7 @@ export default function Usuarios() {
           password: formData.password,
           carrera: formData.carrera
         })
-        setSuccess(t('auth_register_success') || '¡Registro exitoso! Ahora puedes iniciar sesión')
+        setSuccess(t('auth_register_success') || '¡Registro exitoso! Ahora puedes Iniciar sesión')
         addSecurityNotification('✅ Registro completado correctamente', 'success')
         setIsLogin(true)
         setFormData({ nombre: '', email: '', password: '', confirmPassword: '', carrera: '', acceptPrivacy: false })
@@ -185,7 +185,7 @@ export default function Usuarios() {
       const errorMessage = err.response?.data?.detail || t('auth_error') || 'Error al procesar la solicitud'
       setError(errorMessage)
       
-      // Manejar intentos fallidos de inicio de sesión
+      // Manejar intentos fallidos de inicio de Sesión
       if (isLogin && err.response?.status === 401) {
         const newAttempts = failedAttempts + 1
         setFailedAttempts(newAttempts)
@@ -214,19 +214,22 @@ export default function Usuarios() {
 
   if (isAuthenticated()) {
     return (
-      <div className="container-custom py-16 text-center">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="card p-12 max-w-md mx-auto">
-          <h2 className="text-3xl font-bold mb-4">{t('auth_already_logged') || 'Ya has iniciado sesión'}</h2>
+      <>
+        <div className="container-custom py-16 text-center">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="card p-12 max-w-md mx-auto">
+          <h2 className="text-3xl font-bold mb-4">{t('auth_already_logged') || 'Ya has iniciado Sesión'}</h2>
           <button onClick={() => navigate('/dashboard')} className="btn btn-primary w-full">
             {t('nav_dashboard') || 'Ir al Dashboard'}
           </button>
         </motion.div>
       </div>
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f9fafb] via-white to-[#f9fafb] dark:from-neutral-900 dark:to-neutral-800 py-16">
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-[#f9fafb] via-white to-[#f9fafb] dark:from-neutral-900 dark:to-neutral-800 py-16">
       {/* Notificaciones de seguridad accesibles */}
       <div 
         className="fixed top-20 right-6 z-50 space-y-3 max-w-sm"
@@ -264,7 +267,7 @@ export default function Usuarios() {
                   className="ml-auto p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors"
                   aria-label="Cerrar notificación"
                 >
-                  ✕
+                  •
                 </button>
               </div>
             </motion.div>
@@ -277,7 +280,7 @@ export default function Usuarios() {
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-3xl font-bold">E</div>
             <h1 className="text-3xl font-bold gradient-text mb-2 inline-flex items-center gap-2">
-              {isLogin ? (t('auth_login') || 'Iniciar Sesión') : (t('auth_register') || 'Registrarse')}
+              {isLogin ? (t('auth_login') || 'Iniciar sesión') : (t('auth_register') || 'Registrarse')}
               <TooltipHelp label="Ayuda">
                 <ul className="list-disc pl-4 text-left">
                   <li>Usa tu correo institucional (@uleam.edu.ec).</li>
@@ -313,7 +316,7 @@ export default function Usuarios() {
                     Cuenta Bloqueada Temporalmente
                   </h3>
                   <p className="text-sm text-orange-700 dark:text-orange-300 mb-2">
-                    Por razones de seguridad, tu cuenta ha sido bloqueada temporalmente debido a múltiples intentos de inicio de sesión fallidos.
+                    Por razones de seguridad, tu cuenta ha sido bloqueada temporalmente debido a múltiples intentos de inicio de Sesión fallidos.
                   </p>
                   <div className="flex items-center gap-2 bg-orange-200 dark:bg-orange-800/50 rounded-lg px-3 py-2">
                     <span className="text-lg" aria-hidden="true">⏱️</span>
@@ -379,7 +382,7 @@ export default function Usuarios() {
 
             {!isLogin && (
               <div>
-                <label className="label" htmlFor="confirm">Confirmar Contraseña *</label>
+                <label className="label" htmlFor="confirm">Confirmar contraseña *</label>
                 <div className="relative">
                   <input id="confirm" type="password" required aria-required="true" minLength={8} className={`input pr-10 ${touched.confirmPassword && (validity.confirmPassword ? 'ring-2 ring-green-500' : 'ring-2 ring-red-500')}`} value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} onBlur={() => setTouched({ ...touched, confirmPassword: true })} placeholder="••••••••" aria-invalid={touched.confirmPassword && !validity.confirmPassword} aria-describedby="confirm-help" />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2" aria-hidden>{touched.confirmPassword && (validity.confirmPassword ? '✓' : '✗')}</span>
@@ -403,7 +406,7 @@ export default function Usuarios() {
               <div className="flex items-center justify-between">
                 <label className="inline-flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                  Recordar sesión
+                  Recordar Sesión
                 </label>
                 <button type="button" onClick={() => setShowRecovery(true)} className="text-[#1e3a8a] hover:underline focus-visible">¿Olvidaste tu contraseña?</button>
               </div>
@@ -441,14 +444,14 @@ export default function Usuarios() {
                 }}
                 className="text-primary-600 dark:text-primary-400 font-semibold hover:underline focus-visible"
               >
-                {isLogin ? (t('auth_register') || 'Registrarse') : (t('auth_login') || 'Iniciar Sesión')}
+                {isLogin ? (t('auth_register') || 'Registrarse') : (t('auth_login') || 'Iniciar sesión')}
               </button>
             </p>
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
-          <p>🎓 Sistema exclusivo para estudiantes de ULEAM</p>
+          <p> Sistema exclusivo para estudiantes de ULEAM</p>
           <p className="mt-2">🔒 Tus datos están protegidos y seguros</p>
         </motion.div>
 
@@ -463,6 +466,6 @@ export default function Usuarios() {
         <PasswordRecoveryModal open={showRecovery} onClose={() => setShowRecovery(false)} />
       </div>
     </div>
+    </>
   )
 }
-
