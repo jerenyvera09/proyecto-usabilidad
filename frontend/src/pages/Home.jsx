@@ -156,7 +156,7 @@ export default function Home() {
 
       <NewsSection />
 
-      <div className="fixed bottom-6 right-6 md:right-10 z-50">
+      <div className="fixed bottom-6 right-[88px] md:right-[120px] z-50">
         <button
           ref={helpBtnRef}
           onClick={() => setHelpOpen(true)}
