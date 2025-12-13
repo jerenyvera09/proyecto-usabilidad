@@ -1,0 +1,12 @@
+*** Begin Patch
+*** Update File: frontend/src/pages/Usuarios.jsx
+@@
+-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="card p-12 max-w-md mx-auto">
++          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="card p-12 max-w-md mx-auto backdrop-blur-md bg-white/5 dark:bg-black/30 border border-white/10 dark:border-white/10">
+@@
+-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="card p-8 max-w-md mx-auto">
++        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="card p-8 max-w-md mx-auto backdrop-blur-md bg-white/5 dark:bg-black/30 border border-white/10 dark:border-white/10">
+@@
+-      <div className="min-h-screen bg-gradient-to-br from-[#f9fafb] via-white to-[#f9fafb] dark:from-neutral-900 dark:to-neutral-800 py-16">
++      <div className="min-h-screen bg-transparent py-16">
+*** End Patch

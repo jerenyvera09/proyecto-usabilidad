@@ -9,7 +9,7 @@ export default function SearchModal({ open, onClose }){
   const [query, setQuery] = useState('')
   const inputRef = useRef(null)
   const listRef = useRef(null)
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(-1)
 
   // Rutas disponibles (mostrar traducido)
   const routes = useMemo(() => ([
@@ -36,8 +36,8 @@ export default function SearchModal({ open, onClose }){
       }
       if (!open) return
       if (e.key === 'Escape') onClose?.()
-      if (e.key === 'ArrowDown') setActive(a => Math.min(a + 1, filtered.length - 1))
-      if (e.key === 'ArrowUp') setActive(a => Math.max(a - 1, 0))
+      if (e.key === 'ArrowDown') setActive(a => Math.min((a < 0 ? 0 : a + 1), filtered.length - 1))
+      if (e.key === 'ArrowUp') setActive(a => (a < 0 ? 0 : Math.max(a - 1, 0)))
       if (e.key === 'Enter') {
         const item = filtered[active]
         if (item) {
@@ -53,9 +53,10 @@ export default function SearchModal({ open, onClose }){
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 0)
+      setActive(-1)
     } else {
       setQuery('')
-      setActive(0)
+      setActive(-1)
     }
   }, [open])
 

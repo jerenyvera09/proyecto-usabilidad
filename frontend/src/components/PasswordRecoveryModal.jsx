@@ -45,7 +45,7 @@ export default function PasswordRecoveryModal({ open, onClose }){
             {!sent ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="recovery-email" className="block text-sm font-medium mb-1">Correo institucional *</label>
+                  <label htmlFor="recovery-email" className="block text-sm font-medium mb-1 text-textMuted dark:text-[#F1F5F9]">Correo institucional *</label>
                   <input
                     id="recovery-email"
                     type="email"
@@ -56,7 +56,7 @@ export default function PasswordRecoveryModal({ open, onClose }){
                     value={email}
                     onChange={(e)=> setEmail(e.target.value)}
                   />
-                  <p className="text-xs text-textMuted mt-1" aria-live="polite">Usa tu correo @uleam.edu.ec</p>
+                  <p className="text-xs text-textMuted dark:text-[#CBD5E1] mt-1" aria-live="polite">Usa tu correo @uleam.edu.ec</p>
                 </div>
                 <div className="flex justify-end gap-2">
                   <button type="button" ref={closeRef} onClick={onClose} className="btn btn-outline">Cancelar</button>

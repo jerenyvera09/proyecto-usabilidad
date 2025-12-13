@@ -80,8 +80,8 @@
 
   /* Inputs */
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-white/15 bg-white/5 text-textPrimary backdrop-blur-lg;
-    @apply placeholder:text-[#b5c2d6] focus:ring-2 focus:ring-uleamRed focus:border-transparent;
+    @apply w-full px-4 py-3 rounded-xl border border-white/15 dark:border-[#94A3B8] bg-white/5 dark:bg-[#0f172a]/50 text-textPrimary dark:text-[#F8FAFC] backdrop-blur-lg;
+    @apply placeholder:text-[#b5c2d6] dark:placeholder:text-[#CBD5E1] focus:ring-2 focus:ring-uleamRed focus:border-transparent;
     @apply transition-all duration-200 shadow-[0_10px_30px_rgba(0,0,0,0.35)];
   }
 
@@ -90,7 +90,7 @@
   }
 
   .label {
-    @apply block text-sm font-semibold mb-2 text-textMuted;
+    @apply block text-sm font-semibold mb-2 text-textMuted dark:text-[#E2E8F0];
   }
 
   /* Cards */
@@ -145,6 +145,76 @@
   .badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
   }
+
+  /* Navbar hover: círculo indicativo en íconos */
+  .nav-link { position: relative; }
+  .nav-icon { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+  .nav-icon::after {
+    content: '';
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    border: 1.6px solid rgba(43,163,231,0.55); /* accentPurple/Blue */
+    background: radial-gradient(circle, rgba(43,163,231,0.14) 0%, rgba(89,166,107,0.10) 60%, transparent 70%);
+    transform: scale(0.6);
+    opacity: 0;
+    transition: transform 180ms ease, opacity 180ms ease, box-shadow 180ms ease;
+    filter: drop-shadow(0 0 8px rgba(43,163,231,0.25));
+  }
+  .nav-link:hover .nav-icon::after, .nav-link:focus-visible .nav-icon::after {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 3px rgba(43,163,231,0.15);
+  }
+
+  /* Marca ULEAM: mejorar contraste de silueta para fondo oscuro */
+  /* Remove previous logo filters and badge blur */
+  .uleam-mark { filter: none; }
+  .uleam-badge { backdrop-filter: none; }
+
+  /* Institutional block tweaks */
+  .uleam-institutional {
+    letter-spacing: 0.02em;
+  }
+
+  /* Header institutional theme */
+  .header-bg {
+    /* Azul institucional ULEAM aproximado */
+    background: linear-gradient(90deg, #0f2747 0%, #14355f 50%, #163c6a 100%);
+  }
+  .header-text {
+    color: #ffffff;
+  }
+  .header-subtext {
+    color: rgba(255,255,255,0.9);
+  }
+
+  /* Dark buttons visibility */
+  .btn-dark {
+    background-color: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #ffffff;
+  }
+  .btn-dark:hover {
+    background-color: rgba(255,255,255,0.16);
+  }
+
+  /* Language select dark */
+  .lang-select {
+    background: transparent;
+    color: #ffffff;
+  }
+  .lang-select option {
+    background-color: #0f2747;
+    color: #ffffff;
+  }
+
+  /* Responsive logo image quality */
+  .logo-img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
 }
 
 @layer utilities {
@@ -197,6 +267,19 @@
     @apply leading-relaxed tracking-wide;
     letter-spacing: 0.025em;
     line-height: 1.8;
+  }
+
+  /* Selector de idioma: solo texto visible, menú oscuro */
+  .lang-select {
+    background-color: transparent !important;
+    color: #E2E8F0 !important; /* texto claro */
+  }
+  .lang-select:focus {
+    outline: none;
+  }
+  .lang-select option {
+    background-color: #0b1a30 !important; /* fondo oscuro del desplegable */
+    color: #E2E8F0 !important;            /* texto visible */
   }
 
   /* Texto ampliado */

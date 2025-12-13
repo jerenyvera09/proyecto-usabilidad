@@ -13,6 +13,8 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
@@ -25,6 +27,7 @@ from .ml.utils import (
     normalize_payload,
     predict_with_model,
 )
+from .etl.institucional import build_training_dataset
 from .models import (
     Prediccion,
     PrediccionCreate,
@@ -64,6 +67,7 @@ app.add_middleware(
 
 # Modelo global en memoria
 MODEL_BUNDLE = {}
+SCHEDULER: Optional[BackgroundScheduler] = None
 
 
 @app.on_event("startup")
@@ -73,6 +77,21 @@ def on_startup():
     global MODEL_BUNDLE
     MODEL_BUNDLE = load_or_train_model()
     print("Base de datos y modelo ML listos")
+
+    # Scheduler opcional para reentrenamiento semestral (por defecto desactivado)
+    enable_auto_retrain = os.getenv("ENABLE_AUTO_RETRAIN", "false").lower() in {"1", "true", "yes"}
+    if enable_auto_retrain:
+        global SCHEDULER
+        SCHEDULER = BackgroundScheduler()
+        # Reentrenar el 1 de marzo y 1 de septiembre a las 02:00 UTC
+        SCHEDULER.add_job(
+            func=lambda: load_or_train_model(force_retrain=True),
+            trigger=CronTrigger(month="3,9", day=1, hour=2, minute=0),
+            name="auto-semester-retrain",
+            replace_existing=True,
+        )
+        SCHEDULER.start()
+        print("Auto-retrain habilitado (semestral)")
 
 
 # ============================================
@@ -335,6 +354,51 @@ def metricas_modelo():
     return get_model_report(MODEL_BUNDLE)
 
 
+@app.post("/api/model/retrain", tags=["Estadisticas"])
+def reentrenar_modelo(usuario: Optional[Usuario] = Depends(get_current_user)):
+    """Reentrena el modelo con los datos disponibles. Requiere usuario autenticado."""
+    # En una version futura se puede restringir a rol 'admin' o 'docente'
+    global MODEL_BUNDLE
+    MODEL_BUNDLE = load_or_train_model(force_retrain=True)
+    return {
+        "message": "Modelo reentrenado",
+        "modelo": get_model_report(MODEL_BUNDLE),
+    }
+
+
+@app.post("/api/etl/import", tags=["Estadisticas"])
+def importar_datos_institucionales(
+    notas_csv: Optional[str] = None,
+    asistencia_csv: Optional[str] = None,
+    actividades_csv: Optional[str] = None,
+    materias_csv: Optional[str] = None,
+    use_db: bool = False,
+    usuario: Optional[Usuario] = Depends(get_current_user),
+):
+    """Importa datos institucionales (CSV/BD), reentrena el modelo y devuelve métricas."""
+    csv_config = {
+        "notas": notas_csv,
+        "asistencia": asistencia_csv,
+        "actividades": actividades_csv,
+        "materias": materias_csv,
+    }
+
+    df = build_training_dataset(csv_config=csv_config, use_db=use_db)
+    if df.empty:
+        raise HTTPException(status_code=400, detail="No se pudieron importar datos institucionales")
+
+    # Reentrenar usando el dataset importado
+    from .ml.train_models import train_models
+
+    global MODEL_BUNDLE
+    MODEL_BUNDLE = train_models(df=df)
+    return {
+        "message": "Datos importados y modelo reentrenado",
+        "registros": len(df),
+        "modelo": get_model_report(MODEL_BUNDLE),
+    }
+
+
 # ============================================
 # RUTA RAIZ
 # ============================================
@@ -354,3 +418,9 @@ def root():
 @app.get("/health", tags=["General"])
 def health_check():
     return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+
+
+@app.on_event("shutdown")
+def on_shutdown():
+    if SCHEDULER:
+        SCHEDULER.shutdown(wait=False)
