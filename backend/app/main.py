@@ -4,6 +4,7 @@ Backend API REST con FastAPI + pipeline de IA (Regresion Logistica, Arboles
 de Decision, Random Forest y KNN).
 """
 
+from contextlib import asynccontextmanager  # <--- NUEVO IMPORT
 from datetime import datetime, timedelta
 import os
 from typing import List, Optional
@@ -18,6 +19,7 @@ from apscheduler.triggers.cron import CronTrigger
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
+# Importamos la funcion que creaste en database.py para crear las tablas
 from .database import create_db_and_tables, get_session
 from .ml.utils import (
     build_pdf_report,
@@ -38,7 +40,9 @@ from .models import (
     UsuarioResponse,
 )
 
-# Configuracion
+# ============================================
+# CONFIGURACION GLOBAL
+# ============================================
 SECRET_KEY = os.getenv("SECRET_KEY", "edupredict-uleam-2025-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
@@ -46,39 +50,36 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer(auto_error=False)
 
-app = FastAPI(
-    title="EduPredict API",
-    description="Sistema de Prediccion de Rendimiento Academico - ULEAM",
-    version="1.1.0",
-)
-
-# CORS
-origins = os.getenv(
-    "ALLOW_ORIGINS", "http://localhost:5173,http://localhost:5174,http://localhost:5175"
-).split(",")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Modelo global en memoria
+# Variables Globales
 MODEL_BUNDLE = {}
 SCHEDULER: Optional[BackgroundScheduler] = None
 
+# ============================================
+# LIFESPAN (INICIO Y CIERRE DE LA APP)
+# ============================================
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Maneja el ciclo de vida de la aplicacion:
+    1. Al iniciar: Crea tablas en BD (Supabase) y entrena/carga el modelo ML.
+    2. Al apagar: Cierra el scheduler de tareas.
+    """
+    print("🚀 Iniciando EduPredict Backend...")
+    
+    # 1. CREAR TABLAS EN SUPABASE / POSTGRES / SQLITE
+    # Esta linea es la que hace la magia de la migracion automatica
+    try:
+        create_db_and_tables()
+        print("✅ Base de datos verificada/creada correctamente.")
+    except Exception as e:
+        print(f"❌ Error al crear tablas en BD: {e}")
 
-@app.on_event("startup")
-def on_startup():
-    """Inicializa BD y carga/entrena el modelo ML."""
-    create_db_and_tables()
+    # 2. CARGAR O ENTRENAR MODELO ML
     global MODEL_BUNDLE
     MODEL_BUNDLE = load_or_train_model()
-    print("Base de datos y modelo ML listos")
+    print("🧠 Modelo de IA cargado y listo.")
 
-    # Scheduler opcional para reentrenamiento semestral (por defecto desactivado)
+    # 3. SCHEDULER (OPCIONAL)
     enable_auto_retrain = os.getenv("ENABLE_AUTO_RETRAIN", "false").lower() in {"1", "true", "yes"}
     if enable_auto_retrain:
         global SCHEDULER
@@ -91,13 +92,43 @@ def on_startup():
             replace_existing=True,
         )
         SCHEDULER.start()
-        print("Auto-retrain habilitado (semestral)")
+        print("⏰ Auto-retrain habilitado (semestral)")
+
+    yield  # <-- Aqui la aplicacion corre y recibe peticiones
+
+    # 4. LIMPIEZA AL APAGAR
+    if SCHEDULER:
+        SCHEDULER.shutdown(wait=False)
+    print("🛑 Apagando EduPredict Backend...")
 
 
 # ============================================
-# UTILIDADES
+# INICIALIZACION DE FASTAPI
 # ============================================
+app = FastAPI(
+    title="EduPredict API",
+    description="Sistema de Prediccion de Rendimiento Academico - ULEAM",
+    version="1.1.0",
+    lifespan=lifespan,  # <--- CONECTAMOS EL LIFESPAN AQUI
+)
 
+# CORS
+origins = os.getenv(
+    "ALLOW_ORIGINS", "http://localhost:5173,http://localhost:5174,http://localhost:5175,https://edupredict-frontend.up.railway.app"
+).split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ============================================
+# UTILIDADES DE SEGURIDAD
+# ============================================
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
@@ -155,7 +186,6 @@ def validar_payload(payload: dict):
 # RUTAS - AUTENTICACION
 # ============================================
 
-
 @app.post("/api/auth/register", response_model=UsuarioResponse, tags=["Autenticacion"])
 def registrar_usuario(usuario: UsuarioCreate, session: Session = Depends(get_session)):
     """Registrar nuevo usuario (dominio @uleam.edu.ec)."""
@@ -195,12 +225,19 @@ def login(credentials: UsuarioLogin, session: Session = Depends(get_session)):
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": {
+        "usuario": {  # <--- IMPORTANTE: Estandarizamos a 'usuario' para que cuadre con tu Frontend
             "id": usuario.id,
             "nombre": usuario.nombre,
             "email": usuario.email,
             "rol": usuario.rol,
         },
+        # Mantenemos 'user' por si acaso alguna parte vieja del front lo usa, pero priorizamos 'usuario'
+        "user": {
+            "id": usuario.id,
+            "nombre": usuario.nombre,
+            "email": usuario.email,
+            "rol": usuario.rol,
+        }
     }
 
 
@@ -208,17 +245,13 @@ def login(credentials: UsuarioLogin, session: Session = Depends(get_session)):
 # RUTAS - PREDICCIONES
 # ============================================
 
-
 @app.post("/api/predict", response_model=PrediccionResponse, tags=["Predicciones"])
 def crear_prediccion(
     prediccion: PrediccionCreate,
     session: Session = Depends(get_session),
     usuario: Optional[Usuario] = Depends(get_current_user),
 ):
-    """
-    Crear nueva prediccion de rendimiento academico usando el pipeline de ML.
-    Recibe: horas_estudio, promedio, asistencia, tendencia, puntualidad, habitos.
-    """
+    """Crear nueva prediccion de rendimiento academico."""
     global MODEL_BUNDLE
     if not MODEL_BUNDLE:
         MODEL_BUNDLE = load_or_train_model()
@@ -283,11 +316,7 @@ def listar_predicciones(skip: int = 0, limit: int = 100, session: Session = Depe
     ]
 
 
-@app.get(
-    "/api/students/{usuario_id}",
-    response_model=List[PrediccionResponse],
-    tags=["Predicciones"],
-)
+@app.get("/api/students/{usuario_id}", response_model=List[PrediccionResponse], tags=["Predicciones"])
 def listar_predicciones_usuario(usuario_id: int, session: Session = Depends(get_session)):
     """Listar predicciones de un usuario especifico."""
     predicciones = session.exec(select(Prediccion).where(Prediccion.usuario_id == usuario_id)).all()
@@ -297,11 +326,7 @@ def listar_predicciones_usuario(usuario_id: int, session: Session = Depends(get_
     ]
 
 
-@app.get(
-    "/api/students/me/predicciones",
-    response_model=List[PrediccionResponse],
-    tags=["Predicciones"],
-)
+@app.get("/api/students/me/predicciones", response_model=List[PrediccionResponse], tags=["Predicciones"])
 def listar_predicciones_me(
     session: Session = Depends(get_session),
     usuario: Usuario = Depends(get_current_user),
@@ -318,12 +343,9 @@ def listar_predicciones_me(
 # RUTAS - ESTADISTICAS Y MODELO
 # ============================================
 
-
 @app.get("/api/stats", tags=["Estadisticas"])
 def obtener_estadisticas(session: Session = Depends(get_session)):
-    """
-    Estadisticas generales del sistema + distribucion de riesgo para dashboard.
-    """
+    """Estadisticas generales del sistema + distribucion de riesgo para dashboard."""
     total_usuarios = len(session.exec(select(Usuario)).all())
     predicciones = session.exec(select(Prediccion)).all()
     total_predicciones = len(predicciones)
@@ -348,7 +370,7 @@ def obtener_estadisticas(session: Session = Depends(get_session)):
 
 @app.get("/api/model/metrics", tags=["Estadisticas"])
 def metricas_modelo():
-    """Metadatos del modelo entrenado (para dashboard)."""
+    """Metadatos del modelo entrenado."""
     if not MODEL_BUNDLE:
         raise HTTPException(status_code=503, detail="Modelo no cargado")
     return get_model_report(MODEL_BUNDLE)
@@ -356,8 +378,7 @@ def metricas_modelo():
 
 @app.post("/api/model/retrain", tags=["Estadisticas"])
 def reentrenar_modelo(usuario: Optional[Usuario] = Depends(get_current_user)):
-    """Reentrena el modelo con los datos disponibles. Requiere usuario autenticado."""
-    # En una version futura se puede restringir a rol 'admin' o 'docente'
+    """Reentrena el modelo con los datos disponibles."""
     global MODEL_BUNDLE
     MODEL_BUNDLE = load_or_train_model(force_retrain=True)
     return {
@@ -375,7 +396,7 @@ def importar_datos_institucionales(
     use_db: bool = False,
     usuario: Optional[Usuario] = Depends(get_current_user),
 ):
-    """Importa datos institucionales (CSV/BD), reentrena el modelo y devuelve métricas."""
+    """Importa datos institucionales y reentrena."""
     csv_config = {
         "notas": notas_csv,
         "asistencia": asistencia_csv,
@@ -387,7 +408,6 @@ def importar_datos_institucionales(
     if df.empty:
         raise HTTPException(status_code=400, detail="No se pudieron importar datos institucionales")
 
-    # Reentrenar usando el dataset importado
     from .ml.train_models import train_models
 
     global MODEL_BUNDLE
@@ -400,27 +420,18 @@ def importar_datos_institucionales(
 
 
 # ============================================
-# RUTA RAIZ
+# RUTA RAIZ Y HEALTH CHECK
 # ============================================
-
 
 @app.get("/", tags=["General"])
 def root():
     return {
         "app": "EduPredict API",
         "version": "1.1.0",
-        "description": "Sistema de Prediccion de Rendimiento Academico - ULEAM",
         "docs": "/docs",
-        "redoc": "/redoc",
     }
 
 
 @app.get("/health", tags=["General"])
 def health_check():
     return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
-
-
-@app.on_event("shutdown")
-def on_shutdown():
-    if SCHEDULER:
-        SCHEDULER.shutdown(wait=False)
