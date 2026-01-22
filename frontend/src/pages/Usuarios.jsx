@@ -81,18 +81,17 @@ export default function Usuarios() {
     }, 5000)
   }
 
+  // Redirigir automáticamente si el usuario ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('[Usuarios] Usuario autenticado, redirigiendo a /dashboard')
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
   useEffect(() => {
     firstFieldRef.current?.focus()
-    const token = localStorage.getItem('token')
-    const savedUser = localStorage.getItem('user')
-    if (remember && token && savedUser) {
-      try {
-        JSON.parse(savedUser)
-        navigate('/dashboard')
-      } catch {}
-    }
     console.log('✅ Formulario de Usuarios mejorado según rúbrica docente ULEAM 2025.')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const validators = {
@@ -138,9 +137,24 @@ export default function Usuarios() {
           email: formData.email,
           password: formData.password
         })
-        const { access_token, usuario } = response.data
-        login(usuario, access_token)
+
+        // --- 🛠️ INICIO DEL CAMBIO DE SEGURIDAD ---
+        console.log("📡 RESPUESTA DEL BACKEND:", response.data); // Míralo en consola (F12)
+
+        const access_token = response.data.access_token;
         
+        // AQUÍ ESTÁ LA MAGIA: Si no viene como 'usuario', lo busca como 'user'
+        const datosUsuario = response.data.usuario || response.data.user;
+
+        // VALIDACIÓN: Si por alguna razón llega vacío, detenemos todo antes de romper la app
+        if (!datosUsuario) {
+            console.error("❌ ERROR CRÍTICO: El objeto de usuario llegó vacío o undefined");
+            setError("Error interno: El servidor no devolvió los datos del perfil.");
+            setLoading(false);
+            return; 
+        }
+        // --- 🏁 FIN DEL CAMBIO ---
+
         // Resetear intentos fallidos al Iniciar sesión exitosamente
         setFailedAttempts(0)
         localStorage.removeItem('failedAttempts')
@@ -151,9 +165,14 @@ export default function Usuarios() {
         } else {
           localStorage.removeItem('remember')
         }
+        
         setSuccess(t('auth_login_success') || '¡Inicio de Sesión exitoso!')
         addSecurityNotification('✅ Inicio de Sesión exitoso', 'success')
-        setTimeout(() => navigate('/dashboard'), 800)
+        
+        // Usamos la variable segura 'datosUsuario'
+        login(datosUsuario, access_token)
+        
+        // La redirección ahora la maneja el useEffect que vigila isAuthenticated
       } else {
         if (formData.password !== formData.confirmPassword) {
           setError(t('auth_password_mismatch') || 'Las contraseñas no coinciden')
@@ -211,8 +230,7 @@ export default function Usuarios() {
       setLoading(false)
     }
   }
-
-  if (isAuthenticated()) {
+  if (isAuthenticated) {
     return (
       <>
         <div className="container-custom py-16 text-center">

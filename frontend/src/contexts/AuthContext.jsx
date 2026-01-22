@@ -50,7 +50,8 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const isAuthenticated = () => !!user && !!token
+  // Valor booleano derivado (no función) para evitar confusiones
+  const isAuthenticated = !!user && !!token
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated }}>

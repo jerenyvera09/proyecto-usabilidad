@@ -41,7 +41,7 @@ export default function Dashboard() {
   const [loadingStats, setLoadingStats] = useState(true)
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!isAuthenticated) {
       navigate('/usuarios')
       return
     }
@@ -100,7 +100,7 @@ export default function Dashboard() {
     }
   }
 
-  if (!isAuthenticated()) {
+  if (!isAuthenticated) {
     return null
   }
 
