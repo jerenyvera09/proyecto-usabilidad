@@ -8,11 +8,27 @@ import api from '../lib/api'
 const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
 
 export default function Historial() {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const [predicciones, setPredicciones] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Helper para formatear fechas según el idioma
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString(lang === 'en' ? 'en-US' : 'es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  const formatTime = (dateStr) => {
+    return new Date(dateStr).toLocaleTimeString(lang === 'en' ? 'en-US' : 'es-ES', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -55,10 +71,10 @@ export default function Historial() {
       <div className="container-custom">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-4xl font-bold gradient-text mb-2">
-            {t('nav_history') || 'Historial de Predicciones'}
+            {t('history_page_title')}
           </h1>
           <p className="text-textMuted">
-            {t('history_subtitle') || 'Revisa tus predicciones anteriores y tu progreso'}
+            {t('history_user_subtitle')}
           </p>
         </motion.div>
 
@@ -73,12 +89,12 @@ export default function Historial() {
             className="card-glass p-12 text-center space-y-3"
           >
             <div className="text-6xl mb-4">i</div>
-            <h3 className="text-2xl font-bold mb-2">{t('history_empty') || 'No hay predicciones todavia'}</h3>
+            <h3 className="text-2xl font-bold mb-2">{t('history_empty')}</h3>
             <p className="text-textMuted mb-6">
-              {t('history_empty_desc') || 'Realiza tu primera prediccion para comenzar'}
+              {t('history_empty_desc')}
             </p>
             <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
-              {t('predict_button') || 'Hacer Prediccion'}
+              {t('btn_make_prediction')}
             </button>
           </motion.div>
         ) : (
@@ -104,50 +120,43 @@ export default function Historial() {
 
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <p className="text-textMuted mb-1">Promedio</p>
+                        <p className="text-textMuted mb-1">{t('card_average')}</p>
                         <p className="font-semibold">{pred.promedio}</p>
                       </div>
                       <div>
-                        <p className="text-textMuted mb-1">Asistencia</p>
+                        <p className="text-textMuted mb-1">{t('card_attendance')}</p>
                         <p className="font-semibold">{pred.asistencia}%</p>
                       </div>
                       <div>
-                        <p className="text-textMuted mb-1">Hrs. Estudio</p>
+                        <p className="text-textMuted mb-1">{t('card_hours_study')}</p>
                         <p className="font-semibold">{pred.horas_estudio}h</p>
                       </div>
                     </div>
 
                     <div className="text-xs text-textMuted mt-1">
-                      Tendencia: {pred.tendencia} | Puntualidad: {pred.puntualidad}% | Habitos: {pred.habitos}
+                      {t('card_trend')}: {pred.tendencia} | {t('card_punctuality')}: {pred.puntualidad}% | {t('card_habits')}: {pred.habitos}
                     </div>
 
                     <div className="mt-3 pt-3 border-t border-white/10">
                       <p className="text-sm">
-                        <span className="font-medium">Recomendacion:</span> {pred.recomendacion}
+                        <span className="font-medium">{t('card_recommendation')}:</span> {pred.recomendacion}
                       </p>
                     </div>
                   </div>
 
                   <div className="text-sm text-textMuted md:text-right space-y-2">
                     <div>
-                      <p className="font-medium mb-1">Fecha</p>
+                      <p className="font-medium mb-1">{t('card_date')}</p>
                       <p>
-                        {new Date(pred.created_at).toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        {formatDate(pred.created_at)}
                       </p>
                       <p className="text-xs mt-1">
-                        {new Date(pred.created_at).toLocaleTimeString('es-ES', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {formatTime(pred.created_at)}
                       </p>
                     </div>
                     {pred.pdf_url && (
                       <a className="btn btn-outline" href={`${API_BASE}${pred.pdf_url}`}>
-                        Descargar PDF
+                        {t('btn_download_pdf')}
                       </a>
                     )}
                   </div>
@@ -160,7 +169,7 @@ export default function Historial() {
         {predicciones.length > 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8 text-center">
             <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
-              {t('predict_new') || 'Nueva Prediccion'}
+              {t('btn_new_prediction')}
             </button>
           </motion.div>
         )}

@@ -104,42 +104,53 @@ export default function Dashboard() {
     return null
   }
 
+  // Definir metrics DENTRO del componente para acceder a t()
   const metrics = [
     {
-      label: 'Total predicciones',
+      label: t('stat_total'),
       value: stats?.total_predicciones ?? '—',
-      helper: 'Historial acumulado',
+      helper: t('stat_helper_history'),
       icon: FaChartPie,
       accent: 'red',
     },
     {
-      label: 'Score promedio',
+      label: t('stat_avg_score'),
       value: stats?.score_promedio ? `${stats.score_promedio.toFixed(1)}%` : '—',
-      helper: 'Rendimiento global',
+      helper: t('stat_helper_performance'),
       icon: FaShieldAlt,
       accent: 'blue',
     },
     {
-      label: 'Alertas',
+      label: t('stat_alerts'),
       value: stats?.alertas_tempranas ?? '0',
-      helper: 'Detecciones tempranas',
+      helper: t('stat_helper_detections'),
       icon: FaBell,
       accent: 'red',
     },
     {
-      label: 'Mejor modelo (F1)',
+      label: t('stat_best_model'),
       value: stats?.modelo?.metrics?.f1_weighted ? stats.modelo.metrics.f1_weighted.toFixed(3) : '—',
-      helper: stats?.modelo?.best_model || 'Sin modelo',
+      helper: stats?.modelo?.best_model || t('stat_no_model'),
       icon: FaTrophy,
       accent: 'blue',
     },
   ]
 
+  // Definir inputs del formulario DENTRO del componente para usar t()
+  const formInputs = [
+    { name: 'promedio', label: t('label_average'), min: 0, max: 10, step: 0.1, placeholder: '8.5' },
+    { name: 'asistencia', label: t('label_attendance'), min: 0, max: 100, placeholder: '92' },
+    { name: 'horas_estudio', label: t('label_study_hours'), min: 0, max: 60, placeholder: '14' },
+    { name: 'tendencia', label: t('label_trend'), min: -10, max: 10, step: 0.1, placeholder: '0.3' },
+    { name: 'puntualidad', label: t('label_punctuality'), min: 0, max: 100, placeholder: '90' },
+    { name: 'habitos', label: t('label_habits'), min: 0, max: 10, step: 0.1, placeholder: '7' }
+  ]
+
   const riskChartData = {
-    labels: ['Alto', 'Medio', 'Bajo'],
+    labels: [t('chart_risk_high'), t('chart_risk_medium'), t('chart_risk_low')],
     datasets: [
       {
-        label: 'Riesgo',
+        label: t('prediction'),
         data: stats
           ? [stats.riesgo_alto || 0, stats.riesgo_medio || 0, stats.riesgo_bajo || 0]
           : [1, 1, 1],
@@ -151,10 +162,10 @@ export default function Dashboard() {
   }
 
   const barData = {
-    labels: ['Score promedio', 'Alertas tempranas'],
+    labels: [t('stat_avg_score'), t('stat_alerts')],
     datasets: [
       {
-        label: 'Métrica',
+        label: t('prediction'),
         data: [stats?.score_promedio || 0, stats?.alertas_tempranas || 0],
         backgroundColor: [chartColors.blue, chartColors.red],
         ...datasetStyles(chartColors.border),
@@ -180,9 +191,9 @@ export default function Dashboard() {
       <Section className="relative overflow-hidden bg-gradient-to-br from-bg800/50 via-bg900/40 to-bg800/30">
         <div className="absolute inset-0 bg-gradient-to-r from-uleamRed/15 via-bg800/30 to-uleamRedDark/10 blur-3xl" aria-hidden />
         <div className="relative space-y-2">
-          <p className="text-sm uppercase tracking-[0.2em] text-textMuted">Panel de control</p>
-          <h1 className="text-3xl md:text-4xl font-extrabold gradient-text">Tech Dashboard 2025</h1>
-          <p className="text-textMuted">Visión general de tus predicciones y estado del modelo. Bienvenido/a, <span className="text-textPrimary font-semibold">{user?.nombre}</span></p>
+          <p className="text-sm uppercase tracking-[0.2em] text-textMuted">{t('dashboard_subtitle')}</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold gradient-text">{t('dashboard_title')}</h1>
+          <p className="text-textMuted">{t('dashboard_welcome')} <span className="text-textPrimary font-semibold">{user?.nombre}</span></p>
         </div>
       </Section>
 
@@ -206,22 +217,15 @@ export default function Dashboard() {
           <GlassPanel neon className="p-6 space-y-6 bg-gradient-to-br from-bg800/40 via-bg900/30 to-bg800/20">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm text-textMuted uppercase tracking-wide">Prediccion rapida</p>
-                <h2 className="text-2xl font-bold text-textPrimary">Nueva Prediccion</h2>
-                <p className="text-sm text-textMuted">Usa punto decimal (2.4) para mayor precision.</p>
+                <p className="text-sm text-textMuted uppercase tracking-wide">{t('quick_prediction')}</p>
+                <h2 className="text-2xl font-bold text-textPrimary">{t('new_prediction')}</h2>
+                <p className="text-sm text-textMuted">{t('prediction_hint')}</p>
               </div>
-              {loading && <div className="text-xs text-accentBlue animate-pulse-soft">Procesando...</div>}
+              {loading && <div className="text-xs text-accentBlue animate-pulse-soft">{t('btn_processing')}</div>}
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { name: 'promedio', label: 'Promedio (0-10)', min: 0, max: 10, step: 0.1, placeholder: '8.5' },
-                { name: 'asistencia', label: 'Asistencia %', min: 0, max: 100, placeholder: '92' },
-                { name: 'horas_estudio', label: 'Horas de estudio (0-60)', min: 0, max: 60, placeholder: '14' },
-                { name: 'tendencia', label: 'Tendencia academica', min: -10, max: 10, step: 0.1, placeholder: '0.3' },
-                { name: 'puntualidad', label: 'Puntualidad %', min: 0, max: 100, placeholder: '90' },
-                { name: 'habitos', label: 'Habitos (0-10)', min: 0, max: 10, step: 0.1, placeholder: '7' }
-              ].map((input) => (
+              {formInputs.map((input) => (
                 <InputField
                   key={input.name}
                   label={input.label}
@@ -233,7 +237,7 @@ export default function Dashboard() {
                   value={formData[input.name]}
                   onChange={(e) => setFormData({ ...formData, [input.name]: e.target.value })}
                   placeholder={input.placeholder}
-                  helper="Usa punto decimal (2.4)"
+                  helper={t('prediction_hint')}
                 />
               ))}
 
@@ -244,7 +248,7 @@ export default function Dashboard() {
                   disabled={loading}
                   className="w-full py-3 text-lg font-semibold"
                 >
-                  {loading ? 'Procesando...' : 'Calcular Prediccion'}
+                  {loading ? t('btn_processing') : t('btn_calculate')}
                 </Button>
               </div>
             </form>
@@ -256,23 +260,23 @@ export default function Dashboard() {
             <div className="card-glass p-5 skeleton h-[220px]" />
           ) : (
             <GlassPanel neon className="p-5 space-y-4 bg-gradient-to-br from-bg800/70 via-bg900/70 to-surface/70">
-              <h3 className="text-xl font-bold text-textPrimary">Resumen</h3>
+              <h3 className="text-xl font-bold text-textPrimary">{t('summary_title')}</h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="surface-tile p-3">
-                  <p className="text-textMuted">Total predicciones</p>
+                  <p className="text-textMuted">{t('stat_total')}</p>
                   <p className="text-xl font-semibold">{stats?.total_predicciones ?? 0}</p>
                 </div>
                 <div className="surface-tile p-3">
-                  <p className="text-textMuted">Alertas</p>
+                  <p className="text-textMuted">{t('stat_alerts')}</p>
                   <p className="text-xl font-semibold text-red-400">{stats?.alertas_tempranas ?? 0}</p>
                 </div>
                 <div className="surface-tile p-3">
-                  <p className="text-textMuted">Score promedio</p>
+                  <p className="text-textMuted">{t('stat_avg_score')}</p>
                   <p className="text-xl font-semibold">{stats?.score_promedio ? stats.score_promedio.toFixed(1) : '—'}</p>
                 </div>
                 <div className="surface-tile p-3">
-                  <p className="text-textMuted">Ultimo entrenamiento</p>
-                  <p className="text-sm font-semibold">{stats?.modelo?.trained_at ? new Date(stats.modelo.trained_at).toLocaleString() : 'Pendiente'}</p>
+                  <p className="text-textMuted">{t('stat_last_train')}</p>
+                  <p className="text-sm font-semibold">{stats?.modelo?.trained_at ? new Date(stats.modelo.trained_at).toLocaleString() : t('stat_pending')}</p>
                 </div>
               </div>
             </GlassPanel>
@@ -288,7 +292,7 @@ export default function Dashboard() {
           )}
 
           <Button variant="outline" className="w-full" onClick={() => navigate('/historial')}>
-            {t('nav_history') || 'Ver Historial Completo'}
+            {t('nav_history')}
           </Button>
         </div>
       </div>

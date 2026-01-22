@@ -51,7 +51,7 @@ export default function Prediction() {
       setStats(data)
     } catch (err) {
       console.error('Error cargando stats', err)
-      showToast('error', 'No pudimos cargar las estadisticas')
+      showToast('error', t('toast_stats_error'))
     }
   }
 
@@ -63,12 +63,12 @@ export default function Prediction() {
     const puntualidad = parseFloat(formData.puntualidad)
     const habitos = parseFloat(formData.habitos)
 
-    if (Number.isNaN(promedio) || promedio < 0 || promedio > 10) return 'El promedio debe estar entre 0 y 10 (usa punto decimal).'
-    if (Number.isNaN(asistencia) || asistencia < 0 || asistencia > 100) return 'La asistencia debe estar entre 0 y 100.'
-    if (Number.isNaN(horas) || horas < 0) return 'Las horas de estudio deben ser 0 o mas.'
-    if (Number.isNaN(tendencia) || tendencia < -10 || tendencia > 10) return 'La tendencia debe estar entre -10 y 10.'
-    if (Number.isNaN(puntualidad) || puntualidad < 0 || puntualidad > 100) return 'La puntualidad debe estar entre 0 y 100.'
-    if (Number.isNaN(habitos) || habitos < 0 || habitos > 10) return 'Habitos debe estar entre 0 y 10.'
+    if (Number.isNaN(promedio) || promedio < 0 || promedio > 10) return t('validation_promedio')
+    if (Number.isNaN(asistencia) || asistencia < 0 || asistencia > 100) return t('validation_asistencia')
+    if (Number.isNaN(horas) || horas < 0) return t('validation_horas')
+    if (Number.isNaN(tendencia) || tendencia < -10 || tendencia > 10) return t('validation_tendencia')
+    if (Number.isNaN(puntualidad) || puntualidad < 0 || puntualidad > 100) return t('validation_puntualidad')
+    if (Number.isNaN(habitos) || habitos < 0 || habitos > 10) return t('validation_habitos')
     return ''
   }
 
@@ -96,10 +96,10 @@ export default function Prediction() {
       setResult(data)
       setFormData(initialForm)
       loadStats()
-      showToast('success', 'Prediccion generada con exito')
+      showToast('success', t('toast_prediction_success'))
     } catch (err) {
       console.error('Predict error:', err)
-      showToast('error', 'No pudimos procesar la prediccion. Intenta nuevamente.')
+      showToast('error', t('toast_prediction_error'))
     } finally {
       setLoading(false)
     }
@@ -126,20 +126,20 @@ export default function Prediction() {
       a.download = 'reporte-prediccion.pdf'
       a.click()
       window.URL.revokeObjectURL(url)
-      showToast('success', 'PDF generado')
+      showToast('success', t('toast_pdf_success'))
     } catch (err) {
       console.error('PDF error', err)
-      showToast('error', 'No se pudo generar el PDF. Intenta nuevamente.')
+      showToast('error', t('toast_pdf_error'))
     } finally {
       setPdfLoading(false)
     }
   }
 
   const riskChartData = {
-    labels: ['Alto', 'Medio', 'Bajo'],
+    labels: [t('chart_risk_high'), t('chart_risk_medium'), t('chart_risk_low')],
     datasets: [
       {
-        label: 'Distribucion de riesgo',
+        label: t('chart_risk_distribution'),
         data: stats
           ? [stats.riesgo_alto || 0, stats.riesgo_medio || 0, stats.riesgo_bajo || 0]
           : [1, 1, 1],
@@ -151,10 +151,10 @@ export default function Prediction() {
   }
 
   const scoreChartData = {
-    labels: ['Score promedio', 'Alertas'],
+    labels: [t('stat_avg_score'), t('stat_alerts')],
     datasets: [
       {
-        label: 'Metrica global',
+        label: t('chart_global_metric'),
         data: [stats?.score_promedio || 0, stats?.alertas_tempranas || 0],
         backgroundColor: [chartColors.blue, chartColors.red],
         ...datasetStyles(chartColors.border),
@@ -170,11 +170,11 @@ export default function Prediction() {
       <Section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-uleamRed/15 via-grayDark/25 to-uleamRedDark/15 blur-3xl" aria-hidden />
         <div className="relative space-y-3">
-          <p className="text-sm uppercase tracking-[0.25em] text-textMuted">Prediccion 2025</p>
+          <p className="text-sm uppercase tracking-[0.25em] text-textMuted">{t('pred_page_subtitle')}</p>
           <h1 className="text-3xl md:text-4xl font-extrabold gradient-text">
-            {t('prediction') || 'Prediccion de Rendimiento'}
+            {t('pred_page_title')}
           </h1>
-          <p className="text-textMuted">Ingresa tus datos academicos y habitos. Usa punto decimal (2.4) para obtener mayor precision.</p>
+          <p className="text-textMuted">{t('pred_page_desc')}</p>
         </div>
       </Section>
 
@@ -189,7 +189,7 @@ export default function Prediction() {
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
-                label="Promedio general (0-10)"
+                label={t('label_promedio_full')}
                 name="promedio"
                 type="number"
                 min="0"
@@ -199,10 +199,10 @@ export default function Prediction() {
                 value={formData.promedio}
                 onChange={handleChange}
                 placeholder="Ej: 8.5"
-                helper="Usa punto decimal (2.4)"
+                helper={t('prediction_hint')}
               />
               <InputField
-                label="Asistencia (%)"
+                label={t('label_asistencia_full')}
                 name="asistencia"
                 type="number"
                 min="0"
@@ -211,10 +211,10 @@ export default function Prediction() {
                 value={formData.asistencia}
                 onChange={handleChange}
                 placeholder="Ej: 92"
-                helper="Usa punto decimal (92.5)"
+                helper={t('prediction_hint')}
               />
               <InputField
-                label="Horas de estudio semanales"
+                label={t('label_horas_full')}
                 name="horas_estudio"
                 type="number"
                 min="0"
@@ -225,7 +225,7 @@ export default function Prediction() {
                 placeholder="Ej: 14"
               />
               <InputField
-                label="Tendencia academica (variacion)"
+                label={t('label_tendencia_full')}
                 name="tendencia"
                 type="number"
                 min="-10"
@@ -235,10 +235,10 @@ export default function Prediction() {
                 value={formData.tendencia}
                 onChange={handleChange}
                 placeholder="Ej: 0.3"
-                helper="Usa punto decimal (0.3)"
+                helper={t('prediction_hint')}
               />
               <InputField
-                label="Puntualidad (%)"
+                label={t('label_puntualidad_full')}
                 name="puntualidad"
                 type="number"
                 min="0"
@@ -249,7 +249,7 @@ export default function Prediction() {
                 placeholder="Ej: 90"
               />
               <InputField
-                label="Habitos de estudio (0-10)"
+                label={t('label_habitos_full')}
                 name="habitos"
                 type="number"
                 min="0"
@@ -259,7 +259,7 @@ export default function Prediction() {
                 value={formData.habitos}
                 onChange={handleChange}
                 placeholder="Ej: 7"
-                helper="Usa punto decimal (7.5)"
+                helper={t('prediction_hint')}
               />
 
               <div className="md:col-span-2">
@@ -269,7 +269,7 @@ export default function Prediction() {
                   disabled={loading}
                   className="w-full py-3 text-lg font-semibold"
                 >
-                  {loading ? 'Analizando...' : 'Realizar prediccion'}
+                  {loading ? t('btn_analyzing') : t('btn_run_prediction')}
                 </Button>
               </div>
             </form>
@@ -295,13 +295,13 @@ export default function Prediction() {
                   disabled={pdfLoading}
                   variant="outline"
                 >
-                  {pdfLoading ? 'Generando PDF...' : 'Generar PDF'}
+                  {pdfLoading ? t('btn_generating_pdf') : t('btn_generate_pdf')}
                 </Button>
                 <Button
                   onClick={loadStats}
                   variant="ghost"
                 >
-                  Actualizar dashboard
+                  {t('btn_update_dashboard')}
                 </Button>
               </div>
             </motion.div>
@@ -310,28 +310,28 @@ export default function Prediction() {
           <Card className="p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold">Mini dashboard</h2>
-                <p className="text-textMuted text-sm">Metrica global, distribucion de riesgo y estado del modelo</p>
+                <h2 className="text-lg font-semibold">{t('mini_dash_title')}</h2>
+                <p className="text-textMuted text-sm">{t('mini_dash_desc')}</p>
               </div>
               {stats?.modelo?.best_model && (
                 <div className="px-3 py-2 rounded-lg bg-white/10 text-xs text-textPrimary">
-                  Mejor modelo: {stats.modelo.best_model} (F1: {stats.modelo.metrics?.f1_weighted?.toFixed(3)})
+                  {t('best_model_label')} {stats.modelo.best_model} (F1: {stats.modelo.metrics?.f1_weighted?.toFixed(3)})
                 </div>
               )}
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <p className="text-xs text-textMuted">Total predicciones</p>
+                <p className="text-xs text-textMuted">{t('stat_total')}</p>
                 <p className="text-xl font-bold">{stats?.total_predicciones ?? '—'}</p>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <p className="text-xs text-textMuted">Score promedio</p>
+                <p className="text-xs text-textMuted">{t('stat_avg_score')}</p>
                 <p className="text-xl font-bold">{stats?.score_promedio ? `${stats.score_promedio}%` : '—'}</p>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                <p className="text-xs text-textMuted">Ultimo entrenamiento</p>
-                <p className="text-xs font-semibold">{stats?.modelo?.trained_at ? new Date(stats.modelo.trained_at).toLocaleString() : 'Pendiente'}</p>
+                <p className="text-xs text-textMuted">{t('stat_last_train')}</p>
+                <p className="text-xs font-semibold">{stats?.modelo?.trained_at ? new Date(stats.modelo.trained_at).toLocaleString() : t('stat_pending')}</p>
               </div>
             </div>
           </Card>
